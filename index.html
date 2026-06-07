@@ -3,215 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Auror Field Scanner</title>
-    
+    <title>Auror Field Scanner: Ultimate</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1a1110">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --ministry-red: #5c0011;
-            --ministry-gold: #cfa052;
-            --parchment-light: #fdf5e6;
-            --parchment-dark: #e8dcc4;
-            --ink-black: #1a1110;
-        }
-
-        body, html {
-            margin: 0; padding: 0; height: 100%; 
-            background-color: var(--ink-black);
-            font-family: 'IM Fell English', serif; 
-            overflow: hidden; user-select: none; -webkit-user-select: none; 
-            color: var(--ink-black);
-        }
-
+        :root { --ministry-red: #5c0011; --ministry-gold: #cfa052; --parchment-light: #fdf5e6; --ink-black: #1a1110; }
+        body, html { margin: 0; padding: 0; height: 100%; background-color: var(--ink-black); font-family: 'IM Fell English', serif; overflow: hidden; user-select: none; color: var(--ink-black); }
         h1, h2, h3 { font-weight: normal; margin: 0; text-align: center; }
 
         .parchment-bg {
-            background-color: var(--parchment-dark);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(139, 69, 19, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(139, 69, 19, 0.12) 0%, transparent 50%),
-                linear-gradient(to right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 20%, rgba(255,255,255,0) 80%, rgba(255,255,255,0.3) 100%);
+            background-color: #e8dcc4;
+            background-image: radial-gradient(circle at 10% 20%, rgba(139, 69, 19, 0.08) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(139, 69, 19, 0.12) 0%, transparent 50%);
             box-shadow: inset 0 0 60px rgba(43, 0, 0, 0.6);
         }
 
-        /* --- CAMERA & ATMOSPHERE --- */
+        /* Camera & Effects */
         #video-container { position: relative; width: 100vw; height: 100vh; display: none; background: #000; }
         video { width: 100%; height: 100%; object-fit: cover; }
+        .vignette { position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.95); pointer-events: none; z-index: 5; }
+        #mist { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%); animation: driftMist 20s infinite alternate ease-in-out; pointer-events: none; z-index: 6; filter: blur(10px); }
+        @keyframes driftMist { 0% { transform: translate(0, 0); } 100% { transform: translate(15%, 15%); } }
         
-        .vignette {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.95); pointer-events: none; z-index: 5;
-        }
+        .shake { animation: cameraShake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes cameraShake { 10%, 90% { transform: translate3d(-5px, 0, 0); } 20%, 80% { transform: translate3d(5px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-10px, 0, 0); } 40%, 60% { transform: translate3d(10px, 0, 0); } }
+        
+        #cracked-glass { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 50 L10 10 M50 50 L90 20 M50 50 L30 90 M50 50 L80 80" stroke="white" stroke-width="0.5" opacity="0.7"/></svg>'); background-size: cover; z-index: 110; display: none; pointer-events: none; }
 
-        #mist {
-            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15) 0%, transparent 60%),
-                        radial-gradient(circle at 30% 70%, rgba(200,200,255,0.1) 0%, transparent 50%);
-            animation: driftMist 20s infinite alternate ease-in-out;
-            pointer-events: none; z-index: 6; filter: blur(10px);
-        }
-        @keyframes driftMist { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(15%, 15%) rotate(5deg); } }
-
-        /* --- UI LAYER --- */
-        #ui-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
-            padding: 40px 15px; box-sizing: border-box; z-index: 10; pointer-events: none;
-        }
+        /* UI */
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 40px 15px; box-sizing: border-box; z-index: 10; pointer-events: none; }
         .top-bar { display: flex; justify-content: space-between; width: 100%; pointer-events: auto; }
+        .leather-panel { background: rgba(26, 17, 16, 0.85); border: 2px solid var(--ministry-gold); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; color: var(--parchment-light); box-shadow: 0 4px 10px rgba(0,0,0,0.8); }
+        .ministry-btn-small { background: var(--ministry-red); border: 1px solid var(--ministry-gold); color: var(--parchment-light); padding: 8px 12px; border-radius: 4px; font-family: inherit; font-size: 1rem; cursor: pointer; margin-bottom: 5px;}
         
-        .leather-panel {
-            background: rgba(26, 17, 16, 0.85); border: 2px solid var(--ministry-gold); padding: 12px;
-            border-radius: 6px; display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(0,0,0,0.8);
-            color: var(--parchment-light);
-        }
-        #agent-name-display { font-size: 1.2rem; font-weight: bold; }
-        #agent-rank-display { font-size: 1rem; color: var(--ministry-gold); margin-top: 2px; font-style: italic; }
+        #status-text { color: var(--parchment-light); font-size: 1.3rem; background: rgba(26, 17, 16, 0.85); padding: 10px 25px; border-radius: 6px; border: 1px solid var(--ministry-gold); pointer-events: auto; }
+        .cast-btn { pointer-events: auto; background: radial-gradient(circle, #7a0016, #4a000d); border: 2px solid var(--ministry-gold); color: var(--parchment-light); font-family: inherit; font-size: 1.6rem; padding: 15px 40px; border-radius: 40px; cursor: pointer; box-shadow: 0 8px 15px rgba(0,0,0,0.8); margin-top: 15px; }
         
-        .btn-group { display: flex; flex-direction: column; gap: 8px; }
-        .ministry-btn-small {
-            background: var(--ministry-red); border: 1px solid var(--ministry-gold); color: var(--parchment-light);
-            padding: 8px 12px; border-radius: 4px; font-family: inherit; font-size: 1rem;
-            cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.6);
-        }
-        .btn-wanted { background: var(--ink-black); border-color: #ff3333; color: #ff3333; }
+        #map-btn { position: absolute; bottom: 120px; right: 20px; width: 60px; height: 60px; background: #e8dcc4; border: 2px dashed #5c0011; border-radius: 5px; font-size: 2rem; display: flex; justify-content: center; align-items: center; pointer-events: auto; cursor: pointer; box-shadow: 0 4px 8px #000; }
 
-        #status-text {
-            color: var(--parchment-light); font-size: 1.3rem; 
-            background: rgba(26, 17, 16, 0.85); padding: 10px 25px; border-radius: 6px; border: 1px solid var(--ministry-gold); 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.8); transition: all 0.3s ease;
-        }
-        .muggle-active { background: rgba(200, 180, 140, 0.9) !important; color: var(--ink-black) !important; border-color: var(--ink-black) !important; }
+        /* Modals */
+        .modal-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; padding: 25px; box-sizing: border-box; }
+        select { font-family: inherit; font-size: 1.2rem; background: transparent; border: 1px solid var(--ink-black); padding: 5px; margin-bottom: 30px; }
+        #proof-image { width: 100%; max-height: 70%; object-fit: contain; box-shadow: 0 10px 30px rgba(0,0,0,0.9); margin-bottom: 20px; border: 4px solid var(--ink-black); transition: transform 0.1s ease-out; }
 
-        .cast-btn {
-            pointer-events: auto; background: radial-gradient(circle, #7a0016, #4a000d);
-            border: 2px solid var(--ministry-gold); color: var(--parchment-light); font-family: inherit; 
-            font-size: 1.8rem; padding: 15px 40px; border-radius: 40px; cursor: pointer; 
-            box-shadow: 0 8px 15px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.2);
-            transition: transform 0.1s; margin-top: 15px;
-        }
-        .cast-btn:active { transform: scale(0.95); box-shadow: 0 4px 8px rgba(0,0,0,0.8); }
-
-        /* --- MODALS --- */
-        .modal-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            z-index: 100; padding: 25px; box-sizing: border-box; text-align: center;
-        }
-        
-        #profile-screen h1 { color: var(--ministry-red); font-size: 2.8rem; margin-bottom: 5px; text-shadow: 1px 1px 0px rgba(255,255,255,0.3); }
-        #profile-screen h3 { font-size: 1.3rem; margin-bottom: 40px; border-bottom: 1px solid var(--ink-black); padding-bottom: 10px;}
-        #agent-input {
-            background: transparent; border: none; border-bottom: 2px dashed var(--ministry-red); color: var(--ink-black);
-            font-family: inherit; font-size: 1.8rem; padding: 10px; text-align: center;
-            margin-bottom: 30px; outline: none; width: 85%;
-        }
-        
-        #briefing-screen { display: none; padding-top: 8vh; }
-        #briefing-text { font-size: 1.4rem; line-height: 1.5; flex-grow: 1; overflow-y: auto; text-align: left; margin-bottom: 20px;}
-
-        /* Most Wanted Board */
-        #wanted-screen { display: none; }
-        .wanted-poster {
-            background: #fff; padding: 20px; border: 1px solid #ccc; box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-            transform: rotate(-2deg); margin-bottom: 30px; width: 80%;
-        }
-        .wanted-poster h2 { font-size: 2.5rem; color: #000; margin-bottom: 5px; }
-        .wanted-poster h1 { font-size: 3rem; color: var(--ministry-red); margin: 10px 0; border-top: 2px solid #000; border-bottom: 2px solid #000;}
-
-        /* --- LIVE DUEL UI --- */
-        #duel-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: none; flex-direction: column; justify-content: space-between; align-items: center;
-            padding: 50px 10px; box-sizing: border-box; z-index: 15; pointer-events: none;
-        }
-        
-        #duel-title {
-            color: #ff3333; text-shadow: 0 0 15px #000; font-size: 2.5rem; 
-            background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 8px; border: 1px solid #ff3333;
-        }
-        
-        #wizard-aura {
-            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
-            width: 120px; height: 120px; border-radius: 50%; opacity: 0;
-            box-shadow: 0 0 100px currentColor, inset 0 0 60px currentColor;
-            background: radial-gradient(circle, currentColor 20%, transparent 70%);
-            transition: opacity 0.3s, color 0.2s; pointer-events: none;
-            animation: pulseAura 0.5s infinite alternate; filter: blur(8px);
-        }
+        /* Duel */
+        #duel-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: space-between; align-items: center; padding: 50px 10px; box-sizing: border-box; z-index: 15; }
+        #duel-title { color: #ff3333; font-size: 2.2rem; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 8px; border: 1px solid #ff3333; text-align: center; }
+        #wizard-aura { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; border-radius: 50%; box-shadow: 0 0 100px currentColor, inset 0 0 60px currentColor; background: radial-gradient(circle, currentColor 20%, transparent 70%); animation: pulseAura 0.5s infinite alternate; filter: blur(8px); opacity: 0; transition: opacity 0.3s; pointer-events:none;}
         @keyframes pulseAura { 0% { transform: translate(-50%, -50%) scale(1); } 100% { transform: translate(-50%, -50%) scale(1.3); } }
         
         .duel-controls { display: flex; justify-content: space-around; width: 100%; margin-bottom: 30px; pointer-events: auto;}
-        .spell-btn {
-            border: 2px solid var(--parchment-light); border-radius: 50%; width: 80px; height: 80px;
-            font-size: 2.5rem; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.8), inset 0 0 15px rgba(255,255,255,0.4); 
-            cursor: pointer; transition: transform 0.1s;
-        }
-        .spell-btn:active { transform: scale(0.9); }
-        .btn-red { background: radial-gradient(circle, #ff4d4d, #990000); }
-        .btn-green { background: radial-gradient(circle, #4dff4d, #006600); transform: translateY(-30px); }
-        .btn-blue { background: radial-gradient(circle, #4da6ff, #000099); }
-
-        /* Magic Particles Canvas */
+        .spell-btn { border: 2px solid #fff; border-radius: 50%; width: 70px; height: 70px; font-size: 2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        .btn-red { background: radial-gradient(circle, #ff4d4d, #990000); } .btn-green { background: radial-gradient(circle, #4dff4d, #006600); transform: translateY(-20px); } .btn-blue { background: radial-gradient(circle, #4da6ff, #000099); }
         #particle-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
-        #duel-flash { position: absolute; top:0; left:0; width:100%; height:100%; background: #fff; opacity: 0; pointer-events: none; transition: opacity 0.1s; z-index: 110;}
-
-        /* --- AZKABAN PROOF --- */
-        #proof-screen { display: none; }
-        #proof-image { width: 100%; max-height: 70%; object-fit: contain; box-shadow: 0 10px 30px rgba(0,0,0,0.9); margin-bottom: 20px; background: #fff; border: 4px solid var(--ink-black);}
-
-        #gallery-screen { display: none; justify-content: flex-start; padding-top: 30px; }
-        #gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; overflow-y: auto; max-height: 70vh; margin-bottom: 15px; padding: 5px; }
-        .gallery-item { width: 100%; border: 2px solid var(--ink-black); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-
+        
+        /* Marauder's Map */
+        #map-screen { display: none; background: #e8dcc4; background-image: radial-gradient(circle at 50% 50%, rgba(139, 69, 19, 0.05) 0%, transparent 80%); overflow: hidden; z-index: 120; }
+        #map-content { position: absolute; top: 50%; left: 50%; width: 200vw; height: 200vh; transform-origin: center center; transition: transform 0.1s linear; display: flex; justify-content: center; align-items: center; }
+        .footprints { position: absolute; font-size: 2rem; color: #5c0011; opacity: 0.7; transition: all 1s; text-align: center; font-family: inherit; font-size: 1rem; }
     </style>
 </head>
 <body>
 
 <div id="profile-screen" class="modal-screen parchment-bg">
     <h1>Ministry Registry</h1>
-    <h3>Department of Magical Law Enforcement</h3>
-    <input type="text" id="agent-input" placeholder="E.g. Freya or Esme" autocomplete="off">
+    <input type="text" id="agent-input" style="background:transparent; border:none; border-bottom:2px dashed var(--ministry-red); font-family:inherit; font-size:1.8rem; text-align:center; margin: 20px 0; outline:none;" placeholder="Enter Name">
+    <h3>Select Wand Core:</h3>
+    <select id="wand-core">
+        <option value="dragon">Dragon Heartstring (Powerful Blasts)</option>
+        <option value="phoenix">Phoenix Feather (Second Chance in Duel)</option>
+        <option value="unicorn">Unicorn Hair (Enhanced Map Tracking)</option>
+    </select>
     <button id="login-btn" class="cast-btn">Bind Wand</button>
 </div>
 
-<div id="briefing-screen" class="modal-screen parchment-bg">
-    <div id="briefing-text"></div>
-    <button id="accept-btn" class="cast-btn" style="display:none;">Begin Patrol</button>
+<div id="briefing-screen" class="modal-screen parchment-bg" style="display:none;">
+    <div id="briefing-text" style="font-size: 1.4rem; line-height: 1.5; flex-grow: 1; overflow-y: auto;"></div>
+    <button id="accept-btn" class="cast-btn">Begin Patrol</button>
 </div>
 
-<div id="wanted-screen" class="modal-screen parchment-bg">
-    <div class="wanted-poster">
-        <h2>HAVE YOU SEEN</h2>
-        <h1 id="wanted-name">UNKNOWN</h1>
-        <h2>APPROACH WITH EXTREME CAUTION</h2>
-    </div>
-    <button id="close-wanted-btn" class="cast-btn">Return to Scanner</button>
+<div id="map-screen" class="modal-screen">
+    <h2 style="position:absolute; top:20px; color:#5c0011; z-index:10;">Marauder's Map</h2>
+    <div id="map-content">
+        </div>
+    <button id="close-map-btn" class="ministry-btn-small" style="position:absolute; bottom:30px; font-size:1.5rem; padding:15px;">Mischief Managed</button>
 </div>
 
 <div id="video-container">
-    <div class="vignette"></div>
-    <div id="mist"></div>
+    <div class="vignette"></div><div id="mist"></div>
+    <div id="cracked-glass"></div>
     <video id="camera" autoplay playsinline></video>
     
     <div id="ui-layer">
         <div class="top-bar">
             <div class="leather-panel">
                 <span id="agent-name-display">AUROR: ???</span>
-                <span id="agent-rank-display">Rank: Apprentice<br>Captures: 0</span>
+                <span id="agent-rank-display">Rank: Apprentice | Core: ???</span>
             </div>
-            <div class="btn-group">
-                <button id="wanted-btn" class="ministry-btn-small btn-wanted">MOST WANTED</button>
-                <button id="gallery-btn" class="ministry-btn-small">THE LEDGER</button>
+            <div>
+                <button id="gallery-btn" class="ministry-btn-small">THE LEDGER</button><br>
+                <button id="lumos-btn" class="ministry-btn-small" style="background:#000; color:#fff;">LUMOS</button>
             </div>
         </div>
+        <div id="map-btn">📜</div>
         <div style="display: flex; flex-direction: column; align-items: center;">
             <div id="status-text">Trace Charm Active</div>
             <button id="scan-btn" class="cast-btn">Cast Revelio</button>
@@ -221,9 +116,8 @@
     <div id="duel-layer">
         <div id="duel-title">Defend Yourself!</div>
         <div id="wizard-aura"></div>
-        
-        <div style="width: 100%; text-align: center;">
-            <p style="color: #fff; font-size: 1.4rem; text-shadow: 0 0 8px #000; margin-bottom: 20px;">Match the Aura to Counter-Curse!</p>
+        <div style="width: 100%; text-align: center; pointer-events:auto;">
+            <p style="color: #fff; font-size: 1.2rem; text-shadow: 0 0 5px #000; margin-bottom: 10px;">Say: EXPELLIARMUS (Red) | IMPEDIMENTA (Green) | STUPEFY (Blue)<br>Or Swipe: UP (Red) | RIGHT (Blue) | DOWN (Green)</p>
             <div class="duel-controls">
                 <div class="spell-btn btn-red" onclick="castCounterSpell('#ff4d4d')"></div>
                 <div class="spell-btn btn-green" onclick="castCounterSpell('#4dff4d')"></div>
@@ -234,508 +128,368 @@
 </div>
 
 <canvas id="particle-canvas"></canvas>
-<div id="duel-flash"></div>
 
-<div id="proof-screen" class="modal-screen parchment-bg">
+<div id="proof-screen" class="modal-screen parchment-bg" style="display:none;">
     <h1 style="color:var(--ministry-red); font-size: 2.2rem; margin-bottom:15px;">Wizard Apprehended</h1>
     <img id="proof-image" src="" alt="Azkaban Mugshot">
     <button id="dismiss-btn" class="cast-btn">Dispatch to Azkaban</button>
 </div>
 
-<div id="gallery-screen" class="modal-screen parchment-bg">
+<div id="gallery-screen" class="modal-screen parchment-bg" style="display:none;">
     <h1 style="color:var(--ministry-red); font-size: 2.2rem; margin-bottom: 15px;">Holding Cells</h1>
-    <div id="gallery-grid"></div>
-    <div style="display: flex; gap: 10px;">
-        <button id="close-gallery-btn" class="ministry-btn-small" style="padding: 12px 20px; font-size: 1.1rem;">Resume Patrol</button>
-        <button id="logout-btn" class="ministry-btn-small" style="background: var(--ink-black); color: var(--parchment-light);">Relinquish Wand</button>
-    </div>
+    <div id="gallery-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; overflow-y: auto; max-height: 60vh;"></div>
+    <button id="close-gallery-btn" class="cast-btn" style="margin-top:20px;">Resume Patrol</button>
 </div>
 
 <canvas id="canvas-processor" style="display:none;"></canvas>
 
 <script>
-    const video = document.getElementById('camera');
-    const statusText = document.getElementById('status-text');
-    const scanBtn = document.getElementById('scan-btn');
-    const uiLayer = document.getElementById('ui-layer');
-    const duelLayer = document.getElementById('duel-layer');
-    const wizardAura = document.getElementById('wizard-aura');
-    const duelFlash = document.getElementById('duel-flash');
-    const duelTitle = document.getElementById('duel-title');
-
-    const profileScreen = document.getElementById('profile-screen');
-    const agentInput = document.getElementById('agent-input');
-    const loginBtn = document.getElementById('login-btn');
-    const briefingScreen = document.getElementById('briefing-screen');
-    const briefingText = document.getElementById('briefing-text');
-    const acceptBtn = document.getElementById('accept-btn');
-    const videoContainer = document.getElementById('video-container');
-    const proofScreen = document.getElementById('proof-screen');
-    const proofImage = document.getElementById('proof-image');
-    const dismissBtn = document.getElementById('dismiss-btn');
+    // --- STATE VARIABLES ---
+    const data_names = ["Gloom Hilda", "Malus Darkweaver", "Vex Blackwood", "Morwenna Shadowcast", "Grimble the Foul", "Silas Nightshade", "Blighted Barnaby", "Hexen Hearthbane", "Seraphina Snake-Eye", "Corvus Spellbound"];
+    const data_crimes = ["Transfiguring Muggles", "Cursing the Wi-Fi", "Theft of Time-Turners", "Enchanting Biting Brooms", "Forging Prophecies", "Attempting to transfigure a miniature schnauzer", "Stealing Fowzer's treats", "Bewitching teapot spouts", "Illegal levitation of livestock"];
     
-    const wantedScreen = document.getElementById('wanted-screen');
-    const wantedBtn = document.getElementById('wanted-btn');
-    const closeWantedBtn = document.getElementById('close-wanted-btn');
-    const wantedNameDisplay = document.getElementById('wanted-name');
+    let audioCtx, currentAgent = "", wandCore = "", intelDatabase = [], capturesCount = 0;
+    let forceWizard = false, parentTarget = "", isBoss = false, secondChanceUsed = false, lumosActive = false;
+    let successfulCounters = 0, requiredCounters = 3, currentWizardColor = '';
+    const spellColors = {'#ff4d4d': 'red', '#4dff4d': 'green', '#4da6ff': 'blue'};
 
-    const galleryScreen = document.getElementById('gallery-screen');
-    const galleryBtn = document.getElementById('gallery-btn');
-    const closeGalleryBtn = document.getElementById('close-gallery-btn');
-    const logoutBtn = document.getElementById('logout-btn');
-    const galleryGrid = document.getElementById('gallery-grid');
-    const agentNameDisplay = document.getElementById('agent-name-display');
-    const agentRankDisplay = document.getElementById('agent-rank-display');
+    // DOM Elements
+    const video = document.getElementById('camera'), statusText = document.getElementById('status-text');
+    const scanBtn = document.getElementById('scan-btn'), duelLayer = document.getElementById('duel-layer'), wizardAura = document.getElementById('wizard-aura');
+    const particleCanvas = document.getElementById('particle-canvas'), ctxParticles = particleCanvas.getContext('2d');
+    const mapScreen = document.getElementById('map-screen'), mapContent = document.getElementById('map-content');
     
-    const canvas = document.getElementById('canvas-processor');
-    const ctx = canvas.getContext('2d');
+    // Resize Canvas
+    window.addEventListener('resize', () => { particleCanvas.width = window.innerWidth; particleCanvas.height = window.innerHeight; });
+    particleCanvas.width = window.innerWidth; particleCanvas.height = window.innerHeight;
 
-    // --- MASSIVE MAGICAL REGISTRY DATA ---
-    const data_names = [
-        "Gloom Hilda", "Malus Darkweaver", "Vex Blackwood", "Morwenna Shadowcast", "Grimble the Foul", 
-        "Silas Nightshade", "Blighted Barnaby", "Hexen Hearthbane", "Seraphina Snake-Eye", "Corvus Spellbound", 
-        "Evelyn Ember", "Lucius Gloom", "Madame Maledict", "Thaddeus Thorn", "Ignatius Vane", 
-        "Morgana Moth", "Barnabas the Barmy", "Cassandra Curse", "Draco Dread", "Elara Eclipse", 
-        "Fenrir Frost", "Gideon Grim", "Hecate Hex", "Igor Ironwand", "Jinxed Jasper",
-        "Kaelen Kelp", "Lazarus Lock", "Magnus Moon", "Nyx Nocturne", "Orion Omen"
-    ];
-    const data_crimes = [
-        "Transfiguring Muggles", "Unregistered Potion Brewing", "Cursing the Wi-Fi", 
-        "Summoning Unforgivable Rains", "Theft of Time-Turners", "Jinxing the Ministry Lifts", 
-        "Enchanting Biting Brooms", "Forging Prophecies", "Smuggling Dragon Eggs", 
-        "Talking to Portrait Frames", "Attempting to transfigure a miniature schnauzer",
-        "Hexing a schnauzer's bark", "Stealing Fowzer's treats", "Bewitching teapot spouts",
-        "Illegal levitation of livestock", "Confounding local postmen", "Brewing Felix Felicis without permit",
-        "Smuggling Peruvian Instant Darkness Powder", "Releasing Pixies in a public library",
-        "Using Engorgio on garden gnomes", "Charming teacups to bite", "Selling cursed necklaces"
-    ];
-    const data_levels = [
-        "Mischief Maker", "Apprentice Hexer", "Grand Sorcerer", "Master of Shadows", 
-        "Forbidden Caster", "Chaos Bringer", "Wand-Breaker", "Arch-Mage of Azkaban",
-        "Dark Arts Novice", "Spell Weaver", "Curse Breaker", "Rogue Alchemist",
-        "Shadow Walker", "Nightmare Weaver", "Supreme Inquisitor"
-    ];
-
-    let audioCtx;
-    let forceWizard = false;
-    let holdTimer;
-    let currentAgent = "";
-    let intelDatabase = [];
-    let currentWantedTarget = "";
-    let capturesCount = 0;
-    
-    // Duel Mechanics
-    const spellColors = ['#ff4d4d', '#4dff4d', '#4da6ff'];
-    let currentWizardColor = '';
-    let successfulCounters = 0;
-    const requiredCounters = 3;
-
-    // --- PARTICLE ENGINE ---
-    const particleCanvas = document.getElementById('particle-canvas');
-    const ctxParticles = particleCanvas.getContext('2d');
-    let particles = [];
-    
-    function resizeParticleCanvas() {
-        particleCanvas.width = window.innerWidth;
-        particleCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeParticleCanvas);
-    resizeParticleCanvas();
-
-    function fireSpellParticles(color) {
-        for(let i=0; i<60; i++) {
-            particles.push({
-                x: window.innerWidth / 2,
-                y: window.innerHeight - 150,
-                vx: (Math.random() - 0.5) * 12, // Spread out
-                vy: (Math.random() * -15) - 10, // Shoot UP
-                life: 1.0,
-                color: color,
-                size: Math.random() * 5 + 2
-            });
-        }
-    }
-
-    function drawParticles() {
-        ctxParticles.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-        for(let i=particles.length-1; i>=0; i--) {
-            let p = particles[i];
-            p.x += p.vx; p.y += p.vy; p.life -= 0.02;
-            
-            if(p.life <= 0) { particles.splice(i, 1); continue; }
-            
-            ctxParticles.globalAlpha = p.life;
-            ctxParticles.fillStyle = p.color;
-            ctxParticles.shadowBlur = 15;
-            ctxParticles.shadowColor = p.color;
-            ctxParticles.beginPath();
-            ctxParticles.arc(p.x, p.y, p.size, 0, Math.PI*2);
-            ctxParticles.fill();
-        }
-        ctxParticles.globalAlpha = 1.0;
-        ctxParticles.shadowBlur = 0;
-        requestAnimationFrame(drawParticles);
-    }
-    drawParticles(); // Start loop
-
-    // --- AUDIO SYSTEM ---
-    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-
+    // --- AUDIO ---
     function playSound(type) {
-        if (!audioCtx) return;
-        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
         osc.connect(gain); gain.connect(audioCtx.destination);
-        
-        if (type === 'chime') {
-            osc.type = 'sine'; osc.frequency.setValueAtTime(880, audioCtx.currentTime); osc.frequency.setValueAtTime(1108.73, audioCtx.currentTime + 0.1); osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.2);
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.8);
-        } else if (type === 'whoosh') {
-            osc.type = 'sine'; osc.frequency.setValueAtTime(200, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.5); osc.frequency.linearRampToValueAtTime(200, audioCtx.currentTime + 1.0);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 1.0);
-            osc.start(); osc.stop(audioCtx.currentTime + 1.0);
-        } else if (type === 'dark_alert') {
-            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.5);
-            gain.gain.setValueAtTime(0.5, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.0);
-            osc.start(); osc.stop(audioCtx.currentTime + 1.0);
-        } else if (type === 'zap') {
-            osc.type = 'square'; osc.frequency.setValueAtTime(1200, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.15);
-            gain.gain.setValueAtTime(0.4, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.15);
-        } else if (type === 'clash') {
-            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.3);
-            gain.gain.setValueAtTime(0.8, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-        } else if (type === 'escape') {
-            osc.type = 'triangle'; osc.frequency.setValueAtTime(200, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.5);
-            gain.gain.setValueAtTime(1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-        } else if (type === 'capture') {
-            osc.type = 'triangle'; osc.frequency.setValueAtTime(440, audioCtx.currentTime); osc.frequency.setValueAtTime(554, audioCtx.currentTime + 0.1); osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2); osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.3);
-            gain.gain.setValueAtTime(0.6, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
-            osc.start(); osc.stop(audioCtx.currentTime + 1.5);
-        } else if (type === 'camera') {
-            osc.type = 'noise'; gain.gain.setValueAtTime(1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        if (type === 'zap') { osc.type = 'square'; osc.frequency.setValueAtTime(1200, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.15); gain.gain.setValueAtTime(0.4, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15); osc.start(); osc.stop(audioCtx.currentTime + 0.15); }
+        else if (type === 'escape') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.8); gain.gain.setValueAtTime(1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8); osc.start(); osc.stop(audioCtx.currentTime + 0.8); }
+        else if (type === 'capture') { osc.type = 'triangle'; osc.frequency.setValueAtTime(440, audioCtx.currentTime); osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2); osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.4); gain.gain.setValueAtTime(0.6, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5); osc.start(); osc.stop(audioCtx.currentTime + 1.5); }
+    }
+
+    // --- SPEECH RECOGNITION (Voice Spells & Map) ---
+    let recognition;
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = false;
+        recognition.onresult = (event) => {
+            const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+            console.log("Heard: " + transcript);
+            
+            // Map Voice Activation
+            if (transcript.includes("solemnly swear") || transcript.includes("up to no good")) {
+                openMap();
+            }
+            
+            // Voice Spells during Duel
+            if (duelLayer.style.display === 'flex') {
+                if (transcript.includes("expelliarmus") || transcript.includes("red")) castCounterSpell('#ff4d4d');
+                else if (transcript.includes("stupefy") || transcript.includes("blue")) castCounterSpell('#4da6ff');
+                else if (transcript.includes("impedimenta") || transcript.includes("green")) castCounterSpell('#4dff4d');
+            }
+        };
+        recognition.onend = () => { if(document.getElementById('video-container').style.display === 'block') recognition.start(); }; // Restart if closed
+    }
+
+    // --- GESTURE CONTROLS ---
+    let touchStartX = 0, touchStartY = 0;
+    duelLayer.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; touchStartY = e.changedTouches[0].screenY; });
+    duelLayer.addEventListener('touchend', e => {
+        let dX = e.changedTouches[0].screenX - touchStartX, dY = e.changedTouches[0].screenY - touchStartY;
+        if (Math.abs(dX) > 50 || Math.abs(dY) > 50) {
+            if (Math.abs(dY) > Math.abs(dX) && dY < 0) castCounterSpell('#ff4d4d'); // Swipe UP = Red
+            else if (Math.abs(dX) > Math.abs(dY) && dX > 0) castCounterSpell('#4da6ff'); // Swipe RIGHT = Blue
+            else if (Math.abs(dY) > Math.abs(dX) && dY > 0) castCounterSpell('#4dff4d'); // Swipe DOWN = Green
         }
+    });
+
+    // --- GYROSCOPE (Map Rotation & Photo Parallax) ---
+    function requestOrientation() {
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission().then(r => { if (r === 'granted') startGyro(); }).catch(console.error);
+        } else startGyro();
+    }
+    
+    function startGyro() {
+        window.addEventListener('deviceorientation', (e) => {
+            // Parallax Mugshot
+            if (document.getElementById('proof-screen').style.display === 'flex') {
+                document.getElementById('proof-image').style.transform = `perspective(500px) rotateY(${e.gamma/3}deg) rotateX(${e.beta/3 - 15}deg)`;
+            }
+            // Marauder's Map Rotation
+            if (mapScreen.style.display === 'flex' && e.webkitCompassHeading) {
+                mapContent.style.transform = `rotate(${-e.webkitCompassHeading}deg)`;
+            } else if (mapScreen.style.display === 'flex' && e.alpha) {
+                mapContent.style.transform = `rotate(${e.alpha}deg)`;
+            }
+        });
     }
 
-    function vibrate(pattern) { if (navigator.vibrate) navigator.vibrate(pattern); }
+    // --- LUMOS (Flashlight/Screen Brightness) ---
+    document.getElementById('lumos-btn').addEventListener('click', async () => {
+        lumosActive = !lumosActive;
+        // Attempt native torch
+        try {
+            const track = video.srcObject.getVideoTracks()[0];
+            await track.applyConstraints({ advanced: [{ torch: lumosActive }] });
+        } catch (e) {
+            // Fallback CSS Lumos
+            document.getElementById('mist').style.background = lumosActive ? 'radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 80%)' : 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%)';
+        }
+    });
 
-    function getRank(count) {
-        if (count < 3) return "Apprentice Auror";
-        if (count < 8) return "Junior Auror";
-        if (count < 15) return "Senior Auror";
-        if (count < 25) return "Master Duelist";
-        return "Head of the Auror Office";
-    }
+    // --- SECRET MINISTER MENU ---
+    let menuTaps = 0;
+    statusText.addEventListener('click', () => {
+        menuTaps++;
+        if (menuTaps >= 5) {
+            menuTaps = 0;
+            let pwd = prompt("Enter Minister Password:");
+            if (pwd && pwd.toLowerCase() === "alohomora") {
+                parentTarget = prompt("Enter specific name for next scan (or leave blank):");
+                isBoss = confirm("Trigger Co-Op Boss Battle on next scan?");
+                alert("Mischief Managed.");
+            }
+        }
+    });
 
-    function setWantedTarget() {
-        currentWantedTarget = data_names[Math.floor(Math.random() * data_names.length)];
-        localStorage.setItem(`wantedTarget_${currentAgent}`, currentWantedTarget);
-        wantedNameDisplay.innerText = currentWantedTarget;
-    }
-
-    function updateAgentDisplay() {
-        agentNameDisplay.innerText = `AUROR: ${currentAgent}`;
-        agentRankDisplay.innerHTML = `Rank: ${getRank(capturesCount)}<br>Captures: ${capturesCount}`;
-    }
-
-    loginBtn.addEventListener('click', () => {
-        initAudio();
-        const name = agentInput.value.trim().toUpperCase();
-        if (name === "") return;
-        currentAgent = name;
-        
-        const savedData = localStorage.getItem(`wizardIntel_${currentAgent}`);
-        intelDatabase = savedData ? JSON.parse(savedData) : [];
+    // --- INITIALIZATION ---
+    document.getElementById('login-btn').addEventListener('click', () => {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        currentAgent = document.getElementById('agent-input').value.toUpperCase();
+        wandCore = document.getElementById('wand-core').value;
+        intelDatabase = JSON.parse(localStorage.getItem(`wizardIntel_${currentAgent}`)) || [];
         capturesCount = intelDatabase.length;
         
-        const savedWanted = localStorage.getItem(`wantedTarget_${currentAgent}`);
-        if(savedWanted) {
-            currentWantedTarget = savedWanted;
-            wantedNameDisplay.innerText = currentWantedTarget;
-        } else {
-            setWantedTarget();
-        }
-
-        updateAgentDisplay();
-        playSound('chime');
-        profileScreen.style.display = 'none';
-        briefingScreen.style.display = 'flex';
-        typeWriter();
+        document.getElementById('agent-name-display').innerText = currentAgent;
+        document.getElementById('agent-rank-display').innerText = `Core: ${wandCore} | Captures: ${capturesCount}`;
+        
+        document.getElementById('profile-screen').style.display = 'none';
+        document.getElementById('briefing-screen').style.display = 'flex';
+        document.getElementById('briefing-text').innerText = "Speak 'I solemnly swear that I am up to no good' to view the map.\n\nDuring a duel, shout EXPELLIARMUS (Red), IMPEDIMENTA (Green), or STUPEFY (Blue), or use screen swipes to counter!";
     });
 
-    logoutBtn.addEventListener('click', () => {
-        galleryScreen.style.display = 'none';
-        videoContainer.style.display = 'none';
-        agentInput.value = "";
-        profileScreen.style.display = 'flex';
+    document.getElementById('accept-btn').addEventListener('click', () => {
+        requestOrientation();
+        if(recognition) { try { recognition.start(); } catch(e){} }
+        document.getElementById('briefing-screen').style.display = 'none';
+        document.getElementById('video-container').style.display = 'block';
+        navigator.mediaDevices.getUserMedia({video: {facingMode: 'environment'}}).then(s => video.srcObject = s);
     });
 
-    wantedBtn.addEventListener('click', () => {
-        playSound('chime'); wantedScreen.style.display = 'flex';
+    // --- MARAUDER's MAP LOGIC ---
+    document.getElementById('map-btn').addEventListener('click', () => {
+        alert("Mr. Moony presents his compliments and begs you to keep your abnormally large nose out of other people's business. (Try speaking the passcode, or Long-Press this button!)");
     });
-    closeWantedBtn.addEventListener('click', () => {
-        playSound('chime'); wantedScreen.style.display = 'none';
-    });
-
-    const missionText = "DEPARTMENT OF MAGICAL LAW ENFORCEMENT\n\nDirective 42:\nDark Wizards are currently operating under Muggle guise in your vicinity.\n\nCast Revelio to expose their true nature. Should a duel initiate, observe their magical aura and cast the exact matching counter-curse before they Apparate away.\n\nThree successful strikes will bind them.\n\nConstant Vigilance.";
-    let typeIndex = 0;
     
-    function typeWriter() {
-        if (typeIndex < missionText.length) {
-            briefingText.innerHTML += missionText.charAt(typeIndex) === '\n' ? '<br>' : missionText.charAt(typeIndex);
-            typeIndex++;
-            if(typeIndex % 3 === 0) playSound('whoosh'); 
-            setTimeout(typeWriter, 30);
-        } else acceptBtn.style.display = 'block';
-    }
+    // Fallback Long-Press for Map
+    let mapTimer;
+    document.getElementById('map-btn').addEventListener('touchstart', () => { mapTimer = setTimeout(openMap, 1500); });
+    document.getElementById('map-btn').addEventListener('touchend', () => { clearTimeout(mapTimer); });
 
-    acceptBtn.addEventListener('click', () => {
-        playSound('chime');
-        briefingScreen.style.display = 'none';
-        videoContainer.style.display = 'block';
-        setupCamera();
-    });
-
-    async function setupCamera() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
-            video.srcObject = stream;
-        } catch (err) {
-            statusText.innerText = "Magical Interference Detected";
+    function openMap() {
+        mapScreen.style.display = 'flex';
+        mapContent.innerHTML = '<div style="position:absolute; width:10px; height:10px; background:red; border-radius:50%;"></div>'; // You are here
+        
+        // Generate random wandering footprints
+        let numPrints = wandCore === 'unicorn' ? 5 : 3;
+        for(let i=0; i<numPrints; i++) {
+            let p = document.createElement('div');
+            p.className = 'footprints';
+            p.innerText = "👣 " + data_names[Math.floor(Math.random()*data_names.length)];
+            p.style.top = (Math.random() * 150 + 25) + "vh";
+            p.style.left = (Math.random() * 150 + 25) + "vw";
+            mapContent.appendChild(p);
+            
+            // Wander
+            setInterval(() => {
+                p.style.top = (parseFloat(p.style.top) + (Math.random()*10 - 5)) + "vh";
+                p.style.left = (parseFloat(p.style.left) + (Math.random()*10 - 5)) + "vw";
+            }, 2000);
         }
     }
+    document.getElementById('close-map-btn').addEventListener('click', () => { mapScreen.style.display = 'none'; });
 
     // --- LIVE DUEL MECHANICS ---
+    let particlesList = [];
+    function animateParticles() {
+        ctxParticles.clearRect(0,0, particleCanvas.width, particleCanvas.height);
+        for(let i=particlesList.length-1; i>=0; i--) {
+            let p = particlesList[i];
+            p.x += p.vx; p.y += p.vy; p.life -= 0.03;
+            if(p.life <= 0) { particlesList.splice(i, 1); continue; }
+            ctxParticles.globalAlpha = p.life; ctxParticles.fillStyle = p.color;
+            ctxParticles.beginPath(); ctxParticles.arc(p.x, p.y, p.size, 0, Math.PI*2); ctxParticles.fill();
+        }
+        ctxParticles.globalAlpha = 1.0;
+        requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    scanBtn.addEventListener('click', () => {
+        scanBtn.disabled = true; statusText.innerText = "Casting Revelio...";
+        setTimeout(() => {
+            if (forceWizard || parentTarget || isBoss || Math.random() < 0.2) {
+                forceWizard = false;
+                startDuel(); 
+            } else {
+                statusText.innerText = "Muggle Detected"; 
+                setTimeout(() => { statusText.innerText = "Trace Charm Active"; scanBtn.disabled = false; }, 2000);
+            }
+        }, 1500); 
+    });
+
     function startDuel() {
-        uiLayer.style.display = 'none'; 
+        document.getElementById('ui-layer').style.display = 'none'; 
         duelLayer.style.display = 'flex'; 
         successfulCounters = 0;
-        duelTitle.innerText = "Defend Yourself!";
-        duelTitle.style.color = "#ff3333";
-        playSound('dark_alert');
+        secondChanceUsed = false;
+        
+        // Co-Op Boss Logic
+        if (isBoss || capturesCount > 0 && capturesCount % 10 === 0) {
+            requiredCounters = 6;
+            document.getElementById('duel-title').innerText = "ELITE BOSS! PREPARE TO PASS WAND!";
+            document.getElementById('duel-title').style.color = "#ff00ff";
+        } else {
+            requiredCounters = 3;
+            document.getElementById('duel-title').innerText = "Defend Yourself!";
+            document.getElementById('duel-title').style.color = "#ff3333";
+        }
+        
         setTimeout(wizardAttack, 1000); 
     }
 
     function wizardAttack() {
-        currentWizardColor = spellColors[Math.floor(Math.random() * spellColors.length)];
+        const keys = Object.keys(spellColors);
+        currentWizardColor = keys[Math.floor(Math.random() * keys.length)];
         wizardAura.style.color = currentWizardColor;
         wizardAura.style.opacity = '1';
-        playSound('whoosh');
     }
 
     window.castCounterSpell = function(playerColor) {
         if (wizardAura.style.opacity === '0') return; 
-        
         playSound('zap');
-        fireSpellParticles(playerColor); // Trigger Particle Burst!
+        
+        // Particle Burst (Dragon Core gets double)
+        let count = wandCore === 'dragon' ? 100 : 40;
+        for(let i=0; i<count; i++) {
+            particlesList.push({
+                x: window.innerWidth/2, y: window.innerHeight - 100,
+                vx: (Math.random()-0.5)*15, vy: (Math.random()*-20)-5,
+                life: 1.0, color: playerColor, size: Math.random()*6+2
+            });
+        }
         
         setTimeout(() => {
             if (playerColor === currentWizardColor) {
                 successfulCounters++;
-                playSound('clash');
-                
-                duelFlash.style.background = "#fff";
-                duelFlash.style.opacity = '0.8';
-                setTimeout(() => duelFlash.style.opacity = '0', 100);
-                
                 wizardAura.style.opacity = '0'; 
                 
-                if (successfulCounters >= requiredCounters) {
-                    winDuel();
-                } else {
-                    duelTitle.innerText = `Blocked! (${successfulCounters}/${requiredCounters})`;
-                    duelTitle.style.color = "#4dff4d";
+                // Co-Op Pass Wand Mechanic
+                if (requiredCounters === 6 && successfulCounters === 3) {
+                    document.getElementById('duel-title').innerText = "WAND OVERHEATING! PASS TO ANOTHER AUROR!";
+                    setTimeout(wizardAttack, 3000); // 3 seconds to pass phone
+                    return;
+                }
+
+                if (successfulCounters >= requiredCounters) winDuel();
+                else {
+                    document.getElementById('duel-title').innerText = `Blocked! (${successfulCounters}/${requiredCounters})`;
                     setTimeout(wizardAttack, 800); 
                 }
             } else {
-                loseDuel();
+                if(wandCore === 'phoenix' && !secondChanceUsed) {
+                    secondChanceUsed = true;
+                    document.getElementById('duel-title').innerText = "PHOENIX TEARS SAVED YOU! TRY AGAIN!";
+                    setTimeout(wizardAttack, 1500);
+                } else loseDuel();
             }
-        }, 300); // Wait for particles to reach center
+        }, 200); 
     };
 
     function winDuel() {
-        playSound('camera');
-        generateAzkabanMugshot(); // Instant Snap!
-        
         playSound('capture');
-        resetToScanner();
-        proofScreen.style.display = 'flex';
+        generateAzkabanMugshot();
+        duelLayer.style.display = 'none';
+        document.getElementById('ui-layer').style.display = 'flex';
+        wizardAura.style.opacity = '0';
+        document.getElementById('proof-screen').style.display = 'flex';
+        isBoss = false; // Reset boss
     }
 
     function loseDuel() {
         playSound('escape');
-        duelFlash.style.background = "#ff0000";
-        duelFlash.style.opacity = '0.8';
-        setTimeout(() => duelFlash.style.opacity = '0', 300);
-        
-        duelTitle.innerText = "Apparated Away!";
-        duelTitle.style.color = "#ff3333";
+        document.getElementById('video-container').classList.add('shake');
+        document.getElementById('cracked-glass').style.display = 'block';
+        document.getElementById('duel-title').innerText = "Apparated Away!";
         wizardAura.style.opacity = '0';
         
         setTimeout(() => {
-            resetToScanner();
+            document.getElementById('video-container').classList.remove('shake');
+            document.getElementById('cracked-glass').style.display = 'none';
+            duelLayer.style.display = 'none';
+            document.getElementById('ui-layer').style.display = 'flex';
             statusText.innerText = "Target Lost";
             setTimeout(() => { statusText.innerText = "Trace Charm Active"; scanBtn.disabled = false; }, 2000);
         }, 1500);
     }
 
-    function resetToScanner() {
-        duelLayer.style.display = 'none';
-        uiLayer.style.display = 'flex';
-        wizardAura.style.opacity = '0';
-    }
-
-    // --- AZKABAN MUGSHOT GENERATOR ---
-    function wrapText(context, text, x, y, maxWidth, lineHeight) {
-        const words = text.split(' '); let line = '';
-        for(let n = 0; n < words.length; n++) {
-            const testLine = line + words[n] + ' '; const metrics = context.measureText(testLine);
-            if (metrics.width > maxWidth && n > 0) {
-                context.strokeText(line, x, y); context.fillText(line, x, y);
-                line = words[n] + ' '; y += lineHeight;
-            } else line = testLine;
-        }
-        context.strokeText(line, x, y); context.fillText(line, x, y); return y + lineHeight; 
-    }
-
     function generateAzkabanMugshot() {
-        ctx.font = "30px 'IM Fell English'"; 
+        const c = document.getElementById('canvas-processor');
+        c.width = video.videoWidth; c.height = video.videoHeight;
+        const w = c.width, h = c.height;
         
-        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-        const w = canvas.width; const h = canvas.height;
-        
-        // Sepia / High Contrast filter
         ctx.filter = 'sepia(100%) contrast(140%) grayscale(20%) brightness(85%)';
         ctx.drawImage(video, 0, 0, w, h);
         ctx.filter = 'none'; 
         
-        // Iron Prison Bars
-        const barWidth = Math.floor(w * 0.05);
         const gap = Math.floor(w / 5);
         for(let i = gap/2; i < w; i += gap) {
-            let grd = ctx.createLinearGradient(i, 0, i+barWidth, 0);
-            grd.addColorStop(0, "#111"); grd.addColorStop(0.5, "#4a4a4a"); grd.addColorStop(1, "#111");
-            ctx.fillStyle = grd;
-            ctx.fillRect(i, 0, barWidth, h);
+            ctx.fillStyle = "#222"; ctx.fillRect(i, 0, Math.floor(w*0.05), h);
         }
         
-        // Plaque Bottom
-        const margin = Math.floor(w * 0.06); 
-        const plaqueY = h * 0.65;
-        const plaqueHeight = h * 0.3;
-
-        ctx.fillStyle = "#e8dcc4"; 
-        ctx.fillRect(margin, plaqueY, w - (margin * 2), plaqueHeight); 
-        ctx.strokeStyle = "#5c0011"; ctx.lineWidth = 3;
-        ctx.strokeRect(margin + 5, plaqueY + 5, w - (margin * 2) - 10, plaqueHeight - 10);
+        ctx.fillStyle = "#e8dcc4"; ctx.fillRect(w*0.05, h*0.65, w*0.9, h*0.3); 
+        ctx.strokeStyle = "#5c0011"; ctx.lineWidth = 3; ctx.strokeRect(w*0.05+5, h*0.65+5, w*0.9-10, h*0.3-10);
         
-        ctx.fillStyle = "#1a1110"; ctx.strokeStyle = "#1a1110";
-        ctx.lineWidth = 1; ctx.textBaseline = "top";
-        const maxTextWidth = w - (margin * 3);
-        const lineHeight = Math.floor(h * 0.04); 
-        let currentY = plaqueY + 20;
+        ctx.fillStyle = "#1a1110"; ctx.font = `bold ${Math.floor(h*0.04)}px serif`; 
+        
+        let targetName = parentTarget ? parentTarget : data_names[Math.floor(Math.random() * data_names.length)];
+        parentTarget = ""; // Clear
+        
+        ctx.fillText(`ALIAS: ${targetName}`, w*0.1, h*0.72); 
+        ctx.fillText(`CRIME: ${data_crimes[Math.floor(Math.random() * data_crimes.length)]}`, w*0.1, h*0.8); 
 
-        const printLine = (label, value) => {
-            ctx.font = `bold ${Math.floor(h * 0.03)}px 'IM Fell English', serif`; 
-            ctx.fillText(`${label}:`, margin + 20, currentY); 
-            const labelWidth = ctx.measureText(`${label}: `).width;
-            
-            ctx.font = `${Math.floor(h * 0.035)}px 'IM Fell English', serif`; 
-            currentY = wrapText(ctx, value, margin + 20 + labelWidth, currentY, maxTextWidth - labelWidth, lineHeight);
-            currentY += (lineHeight * 0.2); 
-        };
-
-        // Determine who we caught (Bounty Logic)
-        let generatedName = data_names[Math.floor(Math.random() * data_names.length)];
-        if(Math.random() < 0.35) generatedName = currentWantedTarget; // 35% chance to hit bounty
-
-        const isBounty = (generatedName === currentWantedTarget);
-
-        if (isBounty) {
-            ctx.save();
-            ctx.translate(w/2, h * 0.2);
-            ctx.rotate(-Math.PI / 12);
-            ctx.fillStyle = "rgba(0, 150, 0, 0.85)"; ctx.font = `bold ${Math.floor(h * 0.07)}px 'IM Fell English', serif`;
-            ctx.textAlign = "center";
-            ctx.fillText("BOUNTY CLAIMED", 0, 0);
-            ctx.restore();
-            
-            setWantedTarget(); // Generate a new one for next time
-        }
-
-        printLine("Alias", generatedName);
-        printLine("Crime", data_crimes[Math.floor(Math.random() * data_crimes.length)]);
-        printLine("Rank", data_levels[Math.floor(Math.random() * data_levels.length)]);
-
-        proofImage.dataset.tempImageData = canvas.toDataURL('image/jpeg', 0.8);
-        proofImage.src = proofImage.dataset.tempImageData;
+        document.getElementById('proof-image').dataset.tempImageData = c.toDataURL('image/jpeg', 0.8);
+        document.getElementById('proof-image').src = document.getElementById('proof-image').dataset.tempImageData;
     }
 
-    // --- CHEAT CONTROLS (Hold 2 secs) ---
-    function startHoldTimer() { holdTimer = setTimeout(() => { forceWizard = true; scanBtn.style.borderColor = "#fff"; setTimeout(() => { scanBtn.style.borderColor = "#cfa052"; }, 300); }, 2000); }
-    function cancelHoldTimer() { clearTimeout(holdTimer); }
-
-    scanBtn.addEventListener('mousedown', startHoldTimer); scanBtn.addEventListener('touchstart', startHoldTimer, {passive: true});
-    scanBtn.addEventListener('mouseup', cancelHoldTimer); scanBtn.addEventListener('mouseleave', cancelHoldTimer); scanBtn.addEventListener('touchend', cancelHoldTimer);
-
-    // --- SCAN LOGIC ---
-    scanBtn.addEventListener('click', () => {
-        initAudio(); scanBtn.disabled = true; statusText.innerText = "Seeking Dark Magic..."; statusText.classList.remove('muggle-active');
-        
-        let pulseCount = 0;
-        let scanInterval = setInterval(() => { playSound('whoosh'); pulseCount++; if(pulseCount >= 3) clearInterval(scanInterval); }, 500);
-
-        setTimeout(() => {
-            const isWizard = forceWizard || (Math.random() < 0.15); forceWizard = false; 
-
-            if (isWizard) {
-                startDuel(); 
-            } else {
-                statusText.innerText = "No Trace - Standard Muggle"; 
-                statusText.classList.add('muggle-active');
-                playSound('chime');
-                setTimeout(() => { 
-                    statusText.innerText = "Trace Charm Active"; 
-                    statusText.classList.remove('muggle-active');
-                    scanBtn.disabled = false; 
-                }, 2500);
-            }
-        }, 1500); 
-    });
-
-    dismissBtn.addEventListener('click', () => {
-        intelDatabase.unshift(proofImage.dataset.tempImageData); 
+    document.getElementById('dismiss-btn').addEventListener('click', () => {
+        intelDatabase.unshift(document.getElementById('proof-image').dataset.tempImageData); 
         localStorage.setItem(`wizardIntel_${currentAgent}`, JSON.stringify(intelDatabase));
         capturesCount = intelDatabase.length;
-        updateAgentDisplay();
-        
-        proofScreen.style.display = 'none';
-        scanBtn.disabled = false;
-        statusText.innerText = "Trace Charm Active";
+        document.getElementById('agent-rank-display').innerText = `Core: ${wandCore} | Captures: ${capturesCount}`;
+        document.getElementById('proof-screen').style.display = 'none';
+        scanBtn.disabled = false; statusText.innerText = "Trace Charm Active";
     });
 
-    galleryBtn.addEventListener('click', () => {
-        galleryGrid.innerHTML = ''; 
-        if(intelDatabase.length === 0) {
-            galleryGrid.innerHTML = '<p style="color:var(--ink-black); font-size:1.4rem; text-align:center; width:100%;">The cells are empty.</p>';
-        } else {
-            intelDatabase.forEach(imgSrc => {
-                const img = document.createElement('img');
-                img.src = imgSrc; img.className = 'gallery-item';
-                galleryGrid.appendChild(img);
-            });
-        }
-        galleryScreen.style.display = 'flex';
+    // Gallery
+    document.getElementById('gallery-btn').addEventListener('click', () => {
+        const grid = document.getElementById('gallery-grid'); grid.innerHTML = '';
+        intelDatabase.forEach(imgSrc => {
+            const img = document.createElement('img'); img.src = imgSrc; img.style.width = "100%"; img.style.border = "2px solid #000";
+            grid.appendChild(img);
+        });
+        document.getElementById('gallery-screen').style.display = 'flex';
     });
+    document.getElementById('close-gallery-btn').addEventListener('click', () => document.getElementById('gallery-screen').style.display = 'none' );
 
-    closeGalleryBtn.addEventListener('click', () => { galleryScreen.style.display = 'none'; });
-
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
-    }
 </script>
 </body>
 </html>
