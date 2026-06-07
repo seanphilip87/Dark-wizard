@@ -1,7 +1,7 @@
 {
-  "name": "Alien Detector Pro",
-  "short_name": "Scanner",
-  "description": "Special Agent Biometric Alien Scanner",
+  "name": "Dark Wizard Finder",
+  "short_name": "Auror",
+  "description": "Auror Dark Wizard Finder",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
