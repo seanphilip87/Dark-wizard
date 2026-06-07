@@ -40,19 +40,20 @@
         video { width: 100%; height: 100%; object-fit: cover; }
         .vignette { position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.95); pointer-events: none; z-index: 5; }
 
-        #magical-fog {
-            position: absolute; top: -20%; left: -20%; width: 140%; height: 140%;
-            background: radial-gradient(circle at 50% 50%, rgba(200,210,230,0.6) 0%, rgba(20,20,30,0.9) 80%);
-            filter: blur(20px); z-index: 6; pointer-events: none;
-            transition: opacity 2s ease-in-out, transform 2s ease-in-out;
-            transform: scale(1); opacity: 0.9;
+        /* The Revelio Swirl */
+        #revelio-swirl {
+            position: absolute; top: 50%; left: 50%; width: 250px; height: 250px;
+            transform: translate(-50%, -50%); border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 0%, rgba(138,43,226,0.6) 20%, rgba(255,255,255,0.8) 50%, transparent 100%);
+            animation: swirlFast 1.5s linear infinite; filter: blur(8px);
+            opacity: 0; pointer-events: none; z-index: 8; transition: opacity 0.4s;
         }
-        .fog-lifted { opacity: 0 !important; transform: scale(1.5) !important; }
+        @keyframes swirlFast { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
         /* Dark Wizard Escape Mist */
         #escape-mist {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0.9) 0%, rgba(26,17,16,1) 100%);
+            background: radial-gradient(circle, rgba(0,0,0,0.95) 0%, rgba(26,17,16,1) 100%);
             opacity: 0; z-index: 18; pointer-events: none; transition: opacity 0.5s ease-out;
         }
 
@@ -88,12 +89,11 @@
             cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.6); transition: transform 0.1s; letter-spacing: 1px;
         }
         .ministry-btn-small:active { transform: scale(0.95); }
-        .btn-wanted { background: var(--ink-black); border-color: #ff3333; color: #ff3333; }
 
         #status-text {
             color: var(--parchment-light); font-size: 1.2rem; font-family: 'Cinzel Decorative', serif;
             background: rgba(26, 17, 16, 0.9); padding: 10px 25px; border-radius: 6px; border: 1px solid var(--ministry-gold); 
-            box-shadow: 0 6px 12px rgba(0,0,0,0.8); transition: all 0.3s ease; letter-spacing: 1px; text-align: center;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.8); transition: all 0.3s ease; letter-spacing: 1px; text-align: center; pointer-events: auto;
         }
         
         .cast-btn {
@@ -118,18 +118,13 @@
         #profile-screen h1 { color: var(--ministry-red); font-size: 2.2rem; margin-bottom: 5px; text-shadow: 1px 1px 0px rgba(255,255,255,0.3); }
         #profile-screen h3 { font-size: 1.1rem; margin-bottom: 30px; border-bottom: 1px solid var(--ink-black); padding-bottom: 10px;}
         #agent-input { background: transparent; border: none; border-bottom: 2px dashed var(--ministry-red); color: var(--ink-black); font-family: 'Cinzel Decorative', serif; font-size: 1.5rem; padding: 10px; text-align: center; margin-bottom: 25px; outline: none; width: 85%; }
-        select { font-family: 'IM Fell English', serif; font-size: 1.1rem; background: transparent; border: 1px solid var(--ink-black); padding: 5px; margin-bottom: 30px; color: var(--ink-black); }
 
         #briefing-screen { padding-top: 6vh; padding-bottom: 6vh; }
         #briefing-text { font-size: 1.2rem; line-height: 1.6; flex-grow: 1; overflow-y: auto; text-align: left; margin-bottom: 20px; padding: 0 10px; }
 
-        .wanted-poster { background: #fff; padding: 20px; border: 1px solid #ccc; box-shadow: 2px 2px 10px rgba(0,0,0,0.3); transform: rotate(-2deg); margin-bottom: 30px; width: 85%; }
-        .wanted-poster h2 { font-size: 1.6rem; color: #000; margin-bottom: 5px; font-family: 'IM Fell English', serif; }
-        .wanted-poster h1 { font-size: 2rem; color: var(--ministry-red); margin: 10px 0; border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 10px 0;}
-
-        /* --- CLEANED UP DUEL UI --- */
-        #duel-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: space-between; align-items: center; padding: 50px 15px; box-sizing: border-box; z-index: 15; pointer-events: none; }
-        #duel-title { font-family: 'Cinzel Decorative', serif; color: #ff3333; text-shadow: 0 0 10px #000; font-size: 1.5rem; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 8px; border: 1px solid #ff3333; }
+        /* --- LIVE DUEL UI --- */
+        #duel-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: space-between; align-items: center; padding: 40px 15px; box-sizing: border-box; z-index: 15; pointer-events: none; }
+        #duel-title { font-family: 'Cinzel Decorative', serif; color: #ff3333; text-shadow: 0 0 10px #000; font-size: 1.8rem; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 8px; border: 1px solid #ff3333; margin-top: 20px;}
         
         #wizard-aura {
             position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
@@ -143,12 +138,11 @@
         
         .duel-controls { display: flex; justify-content: space-around; width: 100%; margin-bottom: 20px; pointer-events: auto;}
         
-        /* New Spell Icons */
         .spell-btn {
             border: 2px solid var(--parchment-light); border-radius: 50%; width: 65px; height: 65px;
             font-size: 1.8rem; display: flex; justify-content: center; align-items: center;
             box-shadow: 0 8px 15px rgba(0,0,0,0.8), inset 0 0 10px rgba(255,255,255,0.3); 
-            cursor: pointer; transition: transform 0.1s;
+            cursor: pointer; transition: transform 0.1s; color: #fff;
         }
         .spell-btn:active { transform: scale(0.9); }
         .btn-red { background: radial-gradient(circle, #ff3333, #8b0000); }
@@ -159,7 +153,7 @@
         #duel-flash { position: absolute; top:0; left:0; width:100%; height:100%; background: #fff; opacity: 0; pointer-events: none; transition: opacity 0.1s; z-index: 110;}
 
         /* --- MARAUDER'S MAP (Static Blueprint) --- */
-        #map-screen { display: none; background: #d4c3a3; overflow: hidden; z-index: 120; }
+        #map-screen { display: none; background: #d4c3a3; z-index: 120; padding: 0;}
         #map-blueprint {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; 
             background-image: 
@@ -167,13 +161,16 @@
                 linear-gradient(90deg, rgba(92, 0, 17, 0.2) 2px, transparent 2px),
                 linear-gradient(rgba(92, 0, 17, 0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(92, 0, 17, 0.1) 1px, transparent 1px);
-            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            background-size: 80px 80px, 80px 80px, 20px 20px, 20px 20px;
         }
-        .map-wall { position: absolute; background: rgba(92, 0, 17, 0.5); }
-        .footprints { position: absolute; color: #5c0011; opacity: 0.85; transition: all 2s ease-in-out; text-align: center; font-family: inherit; font-size: 1rem; text-shadow: 0 0 2px rgba(92,0,17,0.3);}
+        /* Drawn architectural walls */
+        .map-wall { position: absolute; background: rgba(92, 0, 17, 0.7); box-shadow: 2px 2px 5px rgba(0,0,0,0.2);}
+        .footprints { position: absolute; color: #5c0011; transition: all 2s ease-in-out; text-align: center; font-family: inherit; font-size: 0.9rem; font-weight: bold; text-shadow: 0 0 2px rgba(92,0,17,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center;}
 
         /* --- AZKABAN PROOF --- */
+        #proof-screen { display: none; }
         #proof-image { width: 100%; max-height: 60%; object-fit: contain; box-shadow: 0 10px 30px rgba(0,0,0,0.9); margin-bottom: 20px; background: #fff; border: 4px solid var(--ink-black); }
+        #gallery-screen { display: none; justify-content: flex-start; padding-top: 30px; }
         #gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; overflow-y: auto; max-height: 65vh; margin-bottom: 15px; padding: 5px; }
         .gallery-item { width: 100%; border: 3px solid var(--ink-black); box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
 
@@ -185,12 +182,6 @@
     <h1>Ministry Registry</h1>
     <h3>Department of Magical Law Enforcement</h3>
     <input type="text" id="agent-input" placeholder="Wand Bearer Name" autocomplete="off">
-    <h3 style="margin-bottom: 10px; border:none; font-size: 1.1rem;">Select Wand Core:</h3>
-    <select id="wand-core">
-        <option value="dragon">Dragon Heartstring (Powerful Blasts)</option>
-        <option value="phoenix">Phoenix Feather (Second Chance in Duel)</option>
-        <option value="unicorn">Unicorn Hair (Enhanced Map Tracking)</option>
-    </select>
     <button id="login-btn" class="cast-btn">Bind Wand</button>
 </div>
 
@@ -200,25 +191,16 @@
     <button id="accept-btn" class="cast-btn" style="margin-top: auto;">Begin Patrol</button>
 </div>
 
-<div id="wanted-screen" class="modal-screen parchment-bg" style="display:none;">
-    <div class="wanted-poster">
-        <h2>HAVE YOU SEEN</h2>
-        <h1 id="wanted-name">UNKNOWN</h1>
-        <h2>APPROACH WITH CAUTION</h2>
-    </div>
-    <button id="close-wanted-btn" class="cast-btn">Return to Patrol</button>
-</div>
-
 <!-- Marauder's Map Layer -->
-<div id="map-screen" class="modal-screen parchment-bg" style="padding: 0;">
+<div id="map-screen" class="modal-screen parchment-bg">
     <div id="map-blueprint"></div>
-    <h2 style="position:absolute; top:25px; color:var(--ministry-red); z-index:10; font-size: 2.2rem; text-shadow: 0 0 5px #fff; width: 100%; text-align: center;">Marauder's Map</h2>
+    <h2 style="position:absolute; top:25px; color:var(--ministry-red); z-index:10; font-size: 2.2rem; text-shadow: 0 0 5px #fff; width: 100%; text-align: center; background: rgba(232, 220, 196, 0.8);">Marauder's Map</h2>
     <button id="close-map-btn" class="cast-btn" style="position:absolute; bottom:30px; font-size:1.2rem; padding:12px 25px; z-index:10;">Mischief Managed</button>
 </div>
 
 <div id="video-container">
     <div class="vignette"></div>
-    <div id="magical-fog"></div>
+    <div id="revelio-swirl"></div>
     <div id="escape-mist"></div>
     <div id="cracked-glass"></div>
     <video id="camera" autoplay playsinline></video>
@@ -227,10 +209,9 @@
         <div class="top-bar">
             <div class="leather-panel">
                 <span id="agent-name-display">AUROR: ???</span>
-                <span id="agent-rank-display">Rank: Apprentice | Core: ???</span>
+                <span id="agent-rank-display">Rank: Apprentice | Captures: 0</span>
             </div>
             <div class="btn-group">
-                <button id="wanted-btn" class="ministry-btn-small btn-wanted">MOST WANTED</button>
                 <button id="gallery-btn" class="ministry-btn-small">THE LEDGER</button>
             </div>
         </div>
@@ -247,7 +228,7 @@
         <div id="duel-title">Defend Yourself!</div>
         <div id="wizard-aura"></div>
         <div style="width: 100%; text-align: center; pointer-events:auto;">
-            <p style="color: #fff; font-size: 1rem; text-shadow: 0 0 5px #000; margin-bottom: 10px;">Quickly Match the Aura!</p>
+            <p style="color: #fff; font-size: 1.1rem; text-shadow: 0 0 5px #000; margin-bottom: 10px;">Quickly Match the Aura!</p>
             <div class="duel-controls">
                 <div class="spell-btn btn-red" onclick="castCounterSpell('#ff3333')">🔥</div>
                 <div class="spell-btn btn-green" onclick="castCounterSpell('#33ff33')">🌿</div>
@@ -260,13 +241,13 @@
 <canvas id="particle-canvas"></canvas>
 <div id="duel-flash"></div>
 
-<div id="proof-screen" class="modal-screen parchment-bg" style="display:none;">
+<div id="proof-screen" class="modal-screen parchment-bg">
     <h1 style="color:var(--ministry-red); font-size: 2rem; margin-bottom:15px;">Wizard Apprehended</h1>
     <img id="proof-image" src="" alt="Azkaban Mugshot">
     <button id="dismiss-btn" class="cast-btn">Dispatch to Azkaban</button>
 </div>
 
-<div id="gallery-screen" class="modal-screen parchment-bg" style="display:none;">
+<div id="gallery-screen" class="modal-screen parchment-bg">
     <h1 style="color:var(--ministry-red); font-size: 2.2rem; margin-bottom: 15px;">Holding Cells</h1>
     <div id="gallery-grid"></div>
     <div style="display: flex; gap: 10px; margin-top: 15px;">
@@ -283,8 +264,8 @@
     const data_crimes = ["Transfiguring Muggles", "Unregistered Potion Brewing", "Cursing the Wi-Fi", "Summoning Unforgivable Rains", "Theft of Time-Turners", "Jinxing the Ministry Lifts", "Enchanting Biting Brooms", "Forging Prophecies", "Smuggling Dragon Eggs", "Attempting to transfigure a miniature schnauzer", "Hexing a schnauzer's bark", "Stealing Fowzer's treats", "Bewitching teapot spouts", "Illegal levitation of livestock"];
 
     // --- STATE VARIABLES ---
-    let audioCtx, currentAgent = "", wandCore = "", intelDatabase = [], capturesCount = 0;
-    let forceWizard = false, parentTarget = "", isBoss = false;
+    let audioCtx, currentAgent = "", intelDatabase = [], capturesCount = 0;
+    let forceWizard = false;
     let successfulCounters = 0, requiredCounters = 3, currentWizardColor = '';
     const spellColors = ['#ff3333', '#33ff33', '#33ccff'];
 
@@ -293,13 +274,13 @@
     const scanBtn = document.getElementById('scan-btn'), duelLayer = document.getElementById('duel-layer'), wizardAura = document.getElementById('wizard-aura');
     const particleCanvas = document.getElementById('particle-canvas'), ctxParticles = particleCanvas.getContext('2d');
     const mapScreen = document.getElementById('map-screen'), mapBlueprint = document.getElementById('map-blueprint');
-    const magicalFog = document.getElementById('magical-fog');
+    const revelioSwirl = document.getElementById('revelio-swirl');
     
     // Canvas Sizing
     window.addEventListener('resize', () => { particleCanvas.width = window.innerWidth; particleCanvas.height = window.innerHeight; });
     particleCanvas.width = window.innerWidth; particleCanvas.height = window.innerHeight;
 
-    // --- NEW OPERATIC/MAGICAL AUDIO SYSTEM ---
+    // --- NEW ELEMENTAL AUDIO SYSTEM ---
     function playSound(type) {
         try {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -307,35 +288,60 @@
             osc.connect(gain); gain.connect(audioCtx.destination);
             
             if (type === 'theme') {
-                // Short, mysterious celesta-like melody
-                osc.type = 'sine';
-                const now = audioCtx.currentTime;
-                // E, G, F#, E sequence
-                osc.frequency.setValueAtTime(659.25, now);      // E5
-                osc.frequency.setValueAtTime(783.99, now + 0.4);  // G5
-                osc.frequency.setValueAtTime(739.99, now + 0.8);  // F#5
-                osc.frequency.setValueAtTime(659.25, now + 1.2);  // E5
-                
-                gain.gain.setValueAtTime(0, now);
-                gain.gain.linearRampToValueAtTime(0.5, now + 0.1);
-                gain.gain.exponentialRampToValueAtTime(0.1, now + 0.3);
-                gain.gain.setValueAtTime(0.5, now + 0.4);
-                gain.gain.exponentialRampToValueAtTime(0.1, now + 0.7);
-                gain.gain.setValueAtTime(0.5, now + 0.8);
-                gain.gain.exponentialRampToValueAtTime(0.1, now + 1.1);
-                gain.gain.setValueAtTime(0.5, now + 1.2);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 2.5);
-                
-                osc.start(now); osc.stop(now + 2.5);
+                // Mystical Celesta Login
+                osc.type = 'sine'; const now = audioCtx.currentTime;
+                osc.frequency.setValueAtTime(659.25, now); osc.frequency.setValueAtTime(783.99, now + 0.4); osc.frequency.setValueAtTime(739.99, now + 0.8); osc.frequency.setValueAtTime(659.25, now + 1.2); 
+                gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.4, now + 0.1); gain.gain.exponentialRampToValueAtTime(0.01, now + 2.0);
+                osc.start(now); osc.stop(now + 2.0);
             }
-            else if (type === 'zap') { osc.type = 'square'; osc.frequency.setValueAtTime(1200, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.15); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15); osc.start(); osc.stop(audioCtx.currentTime + 0.15); }
-            else if (type === 'clash') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.3); gain.gain.setValueAtTime(0.5, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3); osc.start(); osc.stop(audioCtx.currentTime + 0.3); }
-            else if (type === 'escape') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 1.0); gain.gain.setValueAtTime(0.8, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.0); osc.start(); osc.stop(audioCtx.currentTime + 1.0); }
-            else if (type === 'capture') { osc.type = 'triangle'; osc.frequency.setValueAtTime(440, audioCtx.currentTime); osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2); osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.4); gain.gain.setValueAtTime(0.5, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5); osc.start(); osc.stop(audioCtx.currentTime + 1.5); }
+            else if (type === 'revelio') {
+                // Sweeping magical scan
+                osc.type = 'sine'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 1.5);
+                gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.7); gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 1.5);
+            }
+            else if (type === 'spell_red') {
+                // Fire (Low aggressive)
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.6, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+            }
+            else if (type === 'spell_blue') {
+                // Water (Rapid bubble sweep)
+                osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.5, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            }
+            else if (type === 'spell_green') {
+                // Nature (Sharp wind whip)
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.5, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            }
+            else if (type === 'dark_alert') {
+                osc.type = 'square'; osc.frequency.setValueAtTime(100, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(60, audioCtx.currentTime + 1.0);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 1.5);
+            }
+            else if (type === 'clash') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.6, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            }
+            else if (type === 'escape') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(40, audioCtx.currentTime + 0.8);
+                gain.gain.setValueAtTime(0.8, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.8);
+            }
+            else if (type === 'capture') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(440, audioCtx.currentTime); osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2); osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.4);
+                gain.gain.setValueAtTime(0.5, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 1.5);
+            }
         } catch(e) {}
     }
 
-    // --- INITIALIZATION & BRIEFING ---
+    // --- INITIALIZATION ---
     function getRank(count) {
         if (count < 3) return "Apprentice Auror";
         if (count < 8) return "Junior Auror";
@@ -343,30 +349,19 @@
         return "Master Duelist";
     }
 
-    function setWantedTarget() {
-        let target = data_names[Math.floor(Math.random() * data_names.length)];
-        localStorage.setItem(`wantedTarget_${currentAgent}`, target);
-        document.getElementById('wanted-name').innerText = target;
-    }
-
     document.getElementById('login-btn').addEventListener('click', () => {
         playSound('theme');
         currentAgent = document.getElementById('agent-input').value.trim().toUpperCase() || "UNKNOWN";
-        wandCore = document.getElementById('wand-core').value;
         intelDatabase = JSON.parse(localStorage.getItem(`wizardIntel_${currentAgent}`)) || [];
         capturesCount = intelDatabase.length;
         
         document.getElementById('agent-name-display').innerText = `Auror: ${currentAgent}`;
-        document.getElementById('agent-rank-display').innerText = `Rank: ${getRank(capturesCount)} | Core: ${wandCore}`;
+        document.getElementById('agent-rank-display').innerText = `Rank: ${getRank(capturesCount)} | Captures: ${capturesCount}`;
         
-        const savedWanted = localStorage.getItem(`wantedTarget_${currentAgent}`);
-        if(savedWanted) document.getElementById('wanted-name').innerText = savedWanted;
-        else setWantedTarget();
-
         document.getElementById('profile-screen').style.display = 'none';
         document.getElementById('briefing-screen').style.display = 'flex';
         
-        document.getElementById('briefing-text').innerHTML = "Dark Wizards are operating under Muggle guise in your vicinity.<br><br>Your orders:<br>Use <b>Revelio</b> to lift the fog and expose their true nature.<br><br>If a duel initiates, you have <b>2 Seconds</b> to counter their curse! Match their aura color using the Spell Icons (🔥, 🌿, 💧).<br><br>Tap the Map Icon to track footprints.<br><br>Constant Vigilance.";
+        document.getElementById('briefing-text').innerHTML = "Dark Wizards are operating under Muggle guise in your vicinity.<br><br>Your orders:<br>Use <b>Revelio</b> to expose their true nature.<br><br>If a duel initiates, you have exactly <b>2 Seconds</b> to counter their curse! Match their aura color using the Spell Icons (🔥, 🌿, 💧).<br><br>Tap the Map Icon to track footprints.<br><br>Constant Vigilance.";
         document.getElementById('accept-btn').style.display = 'block';
     });
 
@@ -379,9 +374,26 @@
         document.getElementById('video-container').style.display = 'block';
     });
 
-    // --- MARAUDER's MAP LOGIC ---
+    // --- MARAUDER's MAP LOGIC (Static Blueprint + Collision) ---
+    function initMapLayout() {
+        mapBlueprint.innerHTML = '';
+        // Draw some thick blueprint walls
+        const wallData = [
+            {t: 20, l: 20, w: 60, h: 2}, {t: 20, l: 20, w: 2, h: 40}, 
+            {t: 60, l: 20, w: 30, h: 2}, {t: 40, l: 80, w: 2, h: 40},
+            {t: 80, l: 40, w: 40, h: 2}, {t: 20, l: 50, w: 2, h: 20}
+        ];
+        wallData.forEach(w => {
+            let el = document.createElement('div');
+            el.className = 'map-wall';
+            el.style.top = w.t + 'vh'; el.style.left = w.l + 'vw';
+            el.style.width = w.w + 'vw'; el.style.height = w.h + 'vh';
+            mapBlueprint.appendChild(el);
+        });
+    }
+
     document.getElementById('map-icon').addEventListener('click', () => {
-        // Prompt for Map activation via Speech (Single Shot)
+        // Prompt for Mic to check password
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRec) {
             statusText.innerText = "Listening for Passcode...";
@@ -389,11 +401,8 @@
             rec.onresult = (e) => {
                 let txt = e.results[0][0].transcript.toLowerCase();
                 statusText.innerText = "Trace Charm Active";
-                if(txt.includes("solemnly swear") || txt.includes("up to no good")) {
-                    openMap();
-                } else {
-                    alert("Mr. Moony presents his compliments and begs you to keep your abnormally large nose out of other people's business.");
-                }
+                if(txt.includes("swear") || txt.includes("no good")) { openMap(); } 
+                else { alert("Mr. Moony presents his compliments and begs you to keep your abnormally large nose out of other people's business."); }
             };
             rec.onerror = () => { statusText.innerText = "Trace Charm Active"; fallbackMap(); };
             rec.start();
@@ -408,47 +417,52 @@
         else alert("Mr. Moony presents his compliments and begs you to keep your abnormally large nose out of other people's business.");
     }
     
-    let mapInterval;
+    let mapInterval, mapPrints = [];
     function openMap() {
         document.getElementById('map-screen').style.display = 'flex';
-        mapBlueprint.innerHTML = ''; 
+        initMapLayout();
+        mapPrints = [];
         
-        // Procedural Blueprint Walls
-        for(let i=0; i<15; i++) {
-            let wall = document.createElement('div');
-            wall.className = 'map-wall';
-            wall.style.width = (Math.random() > 0.5 ? '25vw' : '4px');
-            wall.style.height = (wall.style.width === '4px' ? '25vh' : '4px');
-            wall.style.top = (Math.random() * 80 + 10) + "vh";
-            wall.style.left = (Math.random() * 80 + 10) + "vw";
-            mapBlueprint.appendChild(wall);
-        }
-
-        let numPrints = wandCore === 'unicorn' ? 20 : 12;
-        let mapPrints = [];
+        let numPrints = 10;
         for(let i=0; i<numPrints; i++) {
             let p = document.createElement('div');
             p.className = 'footprints';
-            p.innerText = "👣 " + data_names[Math.floor(Math.random()*data_names.length)];
+            p.innerHTML = `<span style="font-size:1.5rem;">👣</span><br>${data_names[Math.floor(Math.random()*data_names.length)]}`;
             
-            let startX = (Math.random() * 80 + 10);
-            let startY = (Math.random() * 80 + 10);
-            p.style.top = startY + "vh"; p.style.left = startX + "vw";
+            let startX = Math.random() * 80 + 10;
+            let startY = Math.random() * 80 + 10;
+            p.style.transform = `translate(${startX}vw, ${startY}vh)`;
             
             p.dataset.x = startX; p.dataset.y = startY;
             mapBlueprint.appendChild(p);
-            mapPrints.push(p);
+            mapPrints.push({el: p, x: startX, y: startY});
         }
         
+        // Move with collision avoidance
         mapInterval = setInterval(() => {
             mapPrints.forEach(p => {
-                let nX = parseFloat(p.dataset.x) + (Math.random()*10 - 5);
-                let nY = parseFloat(p.dataset.y) + (Math.random()*10 - 5);
-                p.dataset.x = nX; p.dataset.y = nY;
-                p.style.transform = `translate(${Math.random()*20 - 10}px, ${Math.random()*20 - 10}px)`; // slight wiggle
-                p.style.top = nY + "vh"; p.style.left = nX + "vw";
+                let nX = p.x + (Math.random()*8 - 4);
+                let nY = p.y + (Math.random()*8 - 4);
+                
+                // Bounds
+                nX = Math.max(5, Math.min(85, nX));
+                nY = Math.max(5, Math.min(85, nY));
+
+                // Name Collision Check
+                let collision = false;
+                for(let other of mapPrints) {
+                    if (other !== p) {
+                        let dist = Math.sqrt(Math.pow(other.x - nX, 2) + Math.pow(other.y - nY, 2));
+                        if (dist < 12) { collision = true; break; } // Keep away from each other
+                    }
+                }
+                
+                if (!collision) {
+                    p.x = nX; p.y = nY;
+                    p.el.style.transform = `translate(${nX}vw, ${nY}vh)`;
+                }
             });
-        }, 2000);
+        }, 2500);
     }
     document.getElementById('close-map-btn').addEventListener('click', () => { 
         document.getElementById('map-screen').style.display = 'none'; 
@@ -461,7 +475,7 @@
         ctxParticles.clearRect(0,0, particleCanvas.width, particleCanvas.height);
         for(let i=particlesList.length-1; i>=0; i--) {
             let p = particlesList[i];
-            p.x += p.vx; p.y += p.vy; p.life -= 0.03;
+            p.x += p.vx; p.y += p.vy; p.life -= 0.04;
             if(p.life <= 0) { particlesList.splice(i, 1); continue; }
             ctxParticles.globalAlpha = p.life; ctxParticles.fillStyle = p.color;
             ctxParticles.beginPath(); ctxParticles.arc(p.x, p.y, p.size, 0, Math.PI*2); ctxParticles.fill();
@@ -475,10 +489,12 @@
         scanBtn.disabled = true; statusText.innerText = "Casting Revelio..."; 
         statusText.classList.remove('muggle-active');
         
-        // Lift the Fog
-        magicalFog.classList.add('fog-lifted');
-        
+        // Aura Scan Swirl
+        revelioSwirl.style.opacity = '1';
+        playSound('revelio');
+
         setTimeout(() => {
+            revelioSwirl.style.opacity = '0';
             const isWizard = forceWizard || (Math.random() < 0.25); forceWizard = false; 
 
             if (isWizard) {
@@ -487,13 +503,12 @@
                 statusText.innerText = "No Trace - Standard Muggle"; 
                 statusText.classList.add('muggle-active');
                 setTimeout(() => { 
-                    magicalFog.classList.remove('fog-lifted'); // Fog returns
                     statusText.innerText = "Trace Charm Active"; 
                     statusText.classList.remove('muggle-active');
                     scanBtn.disabled = false; 
-                }, 2500);
+                }, 2000);
             }
-        }, 2000); // Wait for fog to clear
+        }, 1500); 
     });
 
     let duelTimer; 
@@ -503,15 +518,11 @@
         duelLayer.style.display = 'flex'; 
         successfulCounters = 0;
         
-        if (isBoss || capturesCount > 0 && capturesCount % 10 === 0) {
-            requiredCounters = 6;
-            document.getElementById('duel-title').innerText = "ELITE BOSS! PASS THE WAND!";
-            document.getElementById('duel-title').style.color = "#ff00ff";
-        } else {
-            requiredCounters = 3;
-            document.getElementById('duel-title').innerText = "Defend Yourself!";
-            document.getElementById('duel-title').style.color = "#ff3333";
-        }
+        requiredCounters = 3;
+        document.getElementById('duel-title').innerText = "Defend Yourself!";
+        document.getElementById('duel-title').style.color = "#ff3333";
+        playSound('dark_alert');
+        
         setTimeout(wizardAttack, 1000); 
     }
 
@@ -519,8 +530,9 @@
         currentWizardColor = spellColors[Math.floor(Math.random() * spellColors.length)];
         wizardAura.style.color = currentWizardColor;
         wizardAura.style.opacity = '1';
+        playSound('whoosh');
         
-        // 2 SECOND JEOPARDY TIMER
+        // EXACTLY 2.0 SECOND JEOPARDY TIMER
         duelTimer = setTimeout(() => {
             loseDuel("TOO SLOW!");
         }, 2000);
@@ -530,10 +542,13 @@
         if (wizardAura.style.opacity === '0') return; 
         
         clearTimeout(duelTimer); // Stop the 2 second timer
-        playSound('zap');
         
-        let count = wandCore === 'dragon' ? 80 : 40;
-        for(let i=0; i<count; i++) {
+        // Elemental Sound Mapping
+        if(playerColor === '#ff3333') playSound('spell_red');
+        else if(playerColor === '#33ff33') playSound('spell_green');
+        else playSound('spell_blue');
+        
+        for(let i=0; i<40; i++) {
             particlesList.push({
                 x: window.innerWidth/2, y: window.innerHeight - 150,
                 vx: (Math.random()-0.5)*15, vy: (Math.random()*-20)-5,
@@ -550,12 +565,6 @@
                 document.getElementById('duel-flash').style.opacity = '0.8';
                 setTimeout(() => document.getElementById('duel-flash').style.opacity = '0', 100);
 
-                if (requiredCounters === 6 && successfulCounters === 3) {
-                    document.getElementById('duel-title').innerText = "WAND OVERHEATING! PASS TO ANOTHER AUROR!";
-                    setTimeout(wizardAttack, 3000); 
-                    return;
-                }
-
                 if (successfulCounters >= requiredCounters) {
                     winDuel();
                 } else {
@@ -570,13 +579,12 @@
     };
 
     function winDuel() {
-        try { generateAzkabanMugshot(); } catch(e) {} 
+        try { generateAzkabanMugshot(); } catch(e) { console.error("Camera fail"); } 
         playSound('capture');
         duelLayer.style.display = 'none';
         document.getElementById('ui-layer').style.display = 'flex';
         wizardAura.style.opacity = '0';
         document.getElementById('proof-screen').style.display = 'flex';
-        isBoss = false; 
     }
 
     function loseDuel(reason) {
@@ -597,15 +605,11 @@
             document.getElementById('ui-layer').style.display = 'flex';
             statusText.innerText = "Target Lost";
             
-            setTimeout(() => { 
-                magicalFog.classList.remove('fog-lifted'); 
-                statusText.innerText = "Trace Charm Active"; 
-                scanBtn.disabled = false; 
-            }, 2000);
+            setTimeout(() => { statusText.innerText = "Trace Charm Active"; scanBtn.disabled = false; }, 2000);
         }, 2000);
     }
 
-    // --- AZKABAN MUGSHOT GENERATOR ---
+    // --- AZKABAN MUGSHOT GENERATOR (Robust Fix) ---
     function wrapText(context, text, x, y, maxWidth, lineHeight) {
         const words = text.split(' '); let line = '';
         for(let n = 0; n < words.length; n++) {
@@ -620,19 +624,29 @@
 
     function generateAzkabanMugshot() {
         const c = document.getElementById('canvas-processor');
-        c.width = video.videoWidth || 640; c.height = video.videoHeight || 480;
+        const imgEl = document.getElementById('proof-image');
+        
+        // Ensure explicit dimensions
+        c.width = video.videoWidth || 640; 
+        c.height = video.videoHeight || 480;
         const w = c.width, h = c.height;
         
-        ctx.filter = 'sepia(100%) contrast(140%) grayscale(20%) brightness(85%)';
-        if(video.videoWidth > 0) ctx.drawImage(video, 0, 0, w, h);
-        else { ctx.fillStyle="#443322"; ctx.fillRect(0,0,w,h); } 
-        ctx.filter = 'none'; 
+        try {
+            ctx.filter = 'sepia(100%) contrast(140%) grayscale(20%) brightness(85%)';
+            if(video.videoWidth > 0) ctx.drawImage(video, 0, 0, w, h);
+            else { ctx.fillStyle="#443322"; ctx.fillRect(0,0,w,h); } 
+            ctx.filter = 'none'; 
+        } catch(e) {
+            ctx.fillStyle="#443322"; ctx.fillRect(0,0,w,h);
+        }
         
+        // Iron Bars
         const gap = Math.floor(w / 5);
         for(let i = gap/2; i < w; i += gap) {
             ctx.fillStyle = "#111"; ctx.fillRect(i, 0, Math.floor(w*0.05), h);
         }
         
+        // Info Plaque
         const margin = Math.floor(w * 0.06); 
         ctx.fillStyle = "#e8dcc4"; ctx.fillRect(margin, h*0.65, w-(margin*2), h*0.3); 
         ctx.strokeStyle = "#5c0011"; ctx.lineWidth = 3; ctx.strokeRect(margin+5, h*0.65+5, w-(margin*2)-10, h*0.3-10);
@@ -651,38 +665,31 @@
             currentY += (lineHeight * 0.2); 
         };
 
-        let targetName = parentTarget ? parentTarget : data_names[Math.floor(Math.random() * data_names.length)];
-        let isWanted = (targetName === localStorage.getItem(`wantedTarget_${currentAgent}`));
-        parentTarget = ""; 
-        
-        if (isWanted) {
-            ctx.save(); ctx.translate(w/2, h*0.2); ctx.rotate(-0.2);
-            ctx.fillStyle = "rgba(0, 120, 0, 0.9)"; ctx.font = `bold ${Math.floor(h*0.08)}px serif`;
-            ctx.textAlign="center"; ctx.fillText("BOUNTY CLAIMED", 0, 0); ctx.restore();
-            setWantedTarget();
-        }
-
+        let targetName = data_names[Math.floor(Math.random() * data_names.length)];
         printLine("Alias", targetName);
         printLine("Crime", data_crimes[Math.floor(Math.random() * data_crimes.length)]);
 
-        document.getElementById('proof-image').dataset.tempImageData = c.toDataURL('image/jpeg', 0.8);
-        document.getElementById('proof-image').src = document.getElementById('proof-image').dataset.tempImageData;
+        try {
+            const dataUrl = c.toDataURL('image/jpeg', 0.8);
+            imgEl.dataset.tempImageData = dataUrl;
+            imgEl.src = dataUrl;
+        } catch(e) {
+            console.log("Canvas Export Error", e);
+        }
     }
 
     // Modal Triggers
     document.getElementById('dismiss-btn').addEventListener('click', () => {
-        intelDatabase.unshift(document.getElementById('proof-image').dataset.tempImageData); 
-        localStorage.setItem(`wizardIntel_${currentAgent}`, JSON.stringify(intelDatabase));
-        capturesCount = intelDatabase.length;
-        document.getElementById('agent-rank-display').innerText = `Rank: ${getRank(capturesCount)} | Core: ${wandCore}`;
-        
+        let imgData = document.getElementById('proof-image').dataset.tempImageData;
+        if(imgData) {
+            intelDatabase.unshift(imgData); 
+            localStorage.setItem(`wizardIntel_${currentAgent}`, JSON.stringify(intelDatabase));
+            capturesCount = intelDatabase.length;
+            document.getElementById('agent-rank-display').innerText = `Rank: ${getRank(capturesCount)}`;
+        }
         document.getElementById('proof-screen').style.display = 'none';
-        magicalFog.classList.remove('fog-lifted'); 
         scanBtn.disabled = false; statusText.innerText = "Trace Charm Active";
     });
-
-    document.getElementById('wanted-btn').addEventListener('click', () => { document.getElementById('wanted-screen').style.display = 'flex'; });
-    document.getElementById('close-wanted-btn').addEventListener('click', () => { document.getElementById('wanted-screen').style.display = 'none'; });
 
     document.getElementById('gallery-btn').addEventListener('click', () => {
         const grid = document.getElementById('gallery-grid'); grid.innerHTML = '';
@@ -698,13 +705,7 @@
     });
     document.getElementById('close-gallery-btn').addEventListener('click', () => document.getElementById('gallery-screen').style.display = 'none');
     
-    document.getElementById('logout-btn').addEventListener('click', () => {
-        document.getElementById('gallery-screen').style.display = 'none';
-        document.getElementById('video-container').style.display = 'none';
-        document.getElementById('profile-screen').style.display = 'flex';
-    });
-
-    // Secret Minister Menu
+    // Secret Menu Trigger
     let menuTaps = 0;
     statusText.addEventListener('click', () => {
         menuTaps++;
@@ -712,9 +713,8 @@
             menuTaps = 0;
             let pwd = prompt("Enter Minister Password:");
             if (pwd && pwd.toLowerCase() === "alohomora") {
-                parentTarget = prompt("Enter specific name for next scan (or leave blank):");
-                isBoss = confirm("Trigger Co-Op Boss Battle on next scan?");
-                alert("Mischief Managed.");
+                forceWizard = true;
+                alert("Mischief Managed. Next scan guaranteed Dark Wizard.");
             }
         }
     });
