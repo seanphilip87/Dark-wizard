@@ -3,175 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Auror Field Scanner: Elite Edition</title>
+    <title>Auror Field Scanner</title>
+    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1a1110">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
 
     <style>
-        :root { 
-            --ministry-red: #5c0011; 
-            --ministry-gold: #cfa052; 
-            --parchment-light: #fdf5e6; 
-            --parchment-dark: #e8dcc4; 
-            --ink-black: #1a1110; 
+        :root {
+            --ministry-red: #5c0011;
+            --ministry-gold: #cfa052;
+            --parchment-light: #fdf5e6;
+            --parchment-dark: #e8dcc4;
+            --ink-black: #1a1110;
         }
 
-        body, html { 
+        body, html {
             margin: 0; padding: 0; height: 100%; 
-            background-color: var(--ink-black); 
+            background-color: var(--ink-black);
             font-family: 'IM Fell English', serif; 
             overflow: hidden; user-select: none; -webkit-user-select: none; 
-            color: var(--ink-black); 
+            color: var(--ink-black);
         }
 
         h1, h2, h3 { font-family: 'Cinzel Decorative', serif; margin: 0; text-align: center; }
 
-        /* Authentic Parchment Texture */
         .parchment-bg {
             background-color: var(--parchment-dark);
             background-image: 
-                radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.08) 0%, transparent 40%), 
+                radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.08) 0%, transparent 40%),
                 radial-gradient(circle at 80% 70%, rgba(139, 69, 19, 0.12) 0%, transparent 50%),
                 linear-gradient(to right, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 20%, rgba(255,255,255,0) 80%, rgba(255,255,255,0.2) 100%);
-            box-shadow: inset 0 0 80px rgba(43, 0, 0, 0.8);
+            box-shadow: inset 0 0 60px rgba(43, 0, 0, 0.7);
         }
 
         /* --- CAMERA & ATMOSPHERE --- */
         #video-container { position: relative; width: 100vw; height: 100vh; display: none; background: #000; }
         video { width: 100%; height: 100%; object-fit: cover; }
         
-        .vignette { position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.95); pointer-events: none; z-index: 5; }
+        .vignette {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.95); pointer-events: none; z-index: 5;
+        }
 
         /* Ambient Room Mist */
         #ambient-mist {
             position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(200,200,255,0.08) 0%, transparent 50%);
-            animation: driftMist 25s infinite alternate ease-in-out;
-            pointer-events: none; z-index: 6; filter: blur(15px); transition: background 0.5s ease;
+            background: radial-gradient(circle at 50% 50%, rgba(200,220,255,0.25) 0%, transparent 50%);
+            animation: driftMist 20s infinite alternate ease-in-out;
+            pointer-events: none; z-index: 6; filter: blur(25px); transition: all 1.5s ease-in-out;
         }
-        @keyframes driftMist { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(10%, 10%) rotate(5deg); } }
+        @keyframes driftMist { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(15%, 15%) rotate(5deg); } }
 
-        /* Revelio Lifting Mist Animation */
-        #revelio-mist {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(138, 43, 226, 0.6) 0%, rgba(0,0,0,0.8) 100%);
-            opacity: 0; pointer-events: none; z-index: 12; filter: blur(10px);
-            transition: opacity 1.5s ease-out, transform 1.5s ease-out;
-            transform: scale(1);
+        /* The lifting animation class triggered by Revelio */
+        .mist-lifting {
+            opacity: 0 !important;
+            transform: scale(2) !important;
         }
-        .mist-active { opacity: 1 !important; transform: scale(1.2) !important; }
 
-        /* Screen Shake for missed spells */
         .shake { animation: cameraShake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes cameraShake { 10%, 90% { transform: translate3d(-5px, 0, 0); } 20%, 80% { transform: translate3d(5px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-10px, 0, 0); } 40%, 60% { transform: translate3d(10px, 0, 0); } }
+        
+        #cracked-glass {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 50 L10 10 M50 50 L90 20 M50 50 L30 90 M50 50 L80 80" stroke="white" stroke-width="0.5" opacity="0.7"/></svg>');
+            background-size: cover; z-index: 110; display: none; pointer-events: none;
+        }
 
         /* --- UI LAYER --- */
         #ui-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
-            padding: 40px 15px; box-sizing: border-box; z-index: 10; pointer-events: none;
+            padding: 35px 15px; box-sizing: border-box; z-index: 10; pointer-events: none;
         }
         .top-bar { display: flex; justify-content: space-between; width: 100%; pointer-events: auto; }
         
         .leather-panel {
-            background: rgba(26, 17, 16, 0.9); border: 2px solid var(--ministry-gold); padding: 12px 15px;
-            border-radius: 4px; display: flex; flex-direction: column; color: var(--parchment-light); 
-            box-shadow: 0 6px 12px rgba(0,0,0,0.8);
+            background: rgba(26, 17, 16, 0.85); border: 2px solid var(--ministry-gold); padding: 10px;
+            border-radius: 6px; display: flex; flex-direction: column; color: var(--parchment-light); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.8);
         }
-        #agent-name-display { font-family: 'Cinzel Decorative', serif; font-size: 1.1rem; text-shadow: 1px 1px 2px #000; }
-        #agent-rank-display { font-size: 0.9rem; color: var(--ministry-gold); margin-top: 4px; font-style: italic; }
+        #agent-name-display { font-size: 1.1rem; font-weight: bold; }
+        #agent-rank-display { font-size: 0.9rem; color: var(--ministry-gold); margin-top: 2px; font-style: italic; }
         
-        .btn-group { display: flex; flex-direction: column; gap: 8px; }
+        .btn-group { display: flex; flex-direction: column; gap: 12px; }
         .ministry-btn-small {
             background: var(--ministry-red); border: 1px solid var(--ministry-gold); color: var(--parchment-light);
-            padding: 10px 15px; border-radius: 4px; font-family: 'Cinzel Decorative', serif; font-size: 0.9rem;
-            cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.6); transition: background 0.2s;
+            padding: 10px 14px; border-radius: 4px; font-family: 'Cinzel Decorative', serif; font-size: 0.9rem;
+            cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.6); transition: transform 0.1s;
         }
-        .ministry-btn-small:active { background: #3a000a; }
+        .ministry-btn-small:active { transform: scale(0.95); }
         .btn-wanted { background: var(--ink-black); border-color: #ff3333; color: #ff3333; }
 
         #status-text {
-            color: var(--parchment-light); font-size: 1.4rem; font-family: 'Cinzel Decorative', serif;
-            background: rgba(26, 17, 16, 0.9); padding: 12px 30px; border-radius: 4px; border: 1px solid var(--ministry-gold); 
-            box-shadow: 0 6px 12px rgba(0,0,0,0.8); transition: all 0.3s ease; letter-spacing: 1px;
+            color: var(--parchment-light); font-size: 1.2rem; font-family: 'Cinzel Decorative', serif;
+            background: rgba(26, 17, 16, 0.85); padding: 10px 25px; border-radius: 6px; border: 1px solid var(--ministry-gold); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.8); transition: all 0.3s ease; pointer-events: auto; text-align: center;
         }
+        .muggle-active { background: rgba(200, 180, 140, 0.9) !important; color: var(--ink-black) !important; border-color: var(--ink-black) !important; }
 
         .cast-btn {
             pointer-events: auto; background: radial-gradient(circle, #7a0016, #4a000d);
             border: 2px solid var(--ministry-gold); color: var(--parchment-light); font-family: 'Cinzel Decorative', serif; 
-            font-size: 1.6rem; padding: 18px 45px; border-radius: 50px; cursor: pointer; 
+            font-size: 1.4rem; padding: 16px 35px; border-radius: 40px; cursor: pointer; 
             box-shadow: 0 8px 15px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.2);
-            transition: transform 0.1s; margin-top: 20px; letter-spacing: 2px;
+            transition: transform 0.1s; margin-top: 15px; letter-spacing: 1px;
         }
-        .cast-btn:active { transform: translateY(4px); box-shadow: 0 4px 8px rgba(0,0,0,0.8); }
+        .cast-btn:active { transform: scale(0.95); box-shadow: 0 4px 8px rgba(0,0,0,0.8); }
+
+        #map-btn {
+            position: absolute; bottom: 130px; right: 20px; width: 60px; height: 60px; 
+            background: #e8dcc4; border: 2px dashed #5c0011; border-radius: 5px; font-size: 2rem; 
+            display: flex; justify-content: center; align-items: center; pointer-events: auto; 
+            cursor: pointer; box-shadow: 0 4px 8px #000;
+        }
 
         /* --- MODALS --- */
-        .modal-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; padding: 25px; box-sizing: border-box; text-align: center; }
+        .modal-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            z-index: 100; padding: 25px; box-sizing: border-box; text-align: center;
+        }
         
-        #profile-screen h1 { color: var(--ministry-red); font-size: 2.8rem; margin-bottom: 5px; text-shadow: 1px 1px 0px rgba(255,255,255,0.3); line-height: 1.1;}
-        #profile-screen h3 { font-size: 1.3rem; margin-bottom: 40px; border-bottom: 1px solid var(--ink-black); padding-bottom: 10px;}
+        #profile-screen h1 { color: var(--ministry-red); font-size: 2.4rem; margin-bottom: 5px; text-shadow: 1px 1px 0px rgba(255,255,255,0.3); }
+        #profile-screen h3 { font-size: 1.2rem; margin-bottom: 30px; border-bottom: 1px solid var(--ink-black); padding-bottom: 10px;}
         #agent-input {
             background: transparent; border: none; border-bottom: 2px dashed var(--ministry-red); color: var(--ink-black);
-            font-family: 'Cinzel Decorative', serif; font-size: 1.6rem; padding: 10px; text-align: center;
-            margin-bottom: 30px; outline: none; width: 85%;
+            font-family: inherit; font-size: 1.6rem; padding: 10px; text-align: center;
+            margin-bottom: 25px; outline: none; width: 85%;
         }
-        #agent-input::placeholder { color: rgba(26, 17, 16, 0.4); }
-        select { font-family: 'IM Fell English', serif; font-size: 1.2rem; background: transparent; border: 1px solid var(--ink-black); padding: 5px; margin-bottom: 40px; color: var(--ink-black); }
-
-        #briefing-screen { display: none; padding-top: 10vh; }
-        #briefing-text { font-size: 1.5rem; line-height: 1.6; flex-grow: 1; overflow-y: auto; text-align: left; margin-bottom: 30px; color: var(--ink-black); text-shadow: 0 0 2px rgba(255,255,255,0.5);}
+        select { font-family: inherit; font-size: 1.1rem; background: transparent; border: 1px solid var(--ink-black); padding: 5px; margin-bottom: 30px; color: var(--ink-black);}
+        
+        #briefing-screen { display: none; padding-top: 8vh; }
+        #briefing-text { font-size: 1.3rem; line-height: 1.5; flex-grow: 1; overflow-y: auto; text-align: left; margin-bottom: 20px;}
 
         /* Most Wanted Board */
         #wanted-screen { display: none; }
         .wanted-poster {
-            background: #fff; padding: 30px 20px; border: 1px solid #ccc; box-shadow: 4px 4px 15px rgba(0,0,0,0.5);
-            transform: rotate(-2deg); margin-bottom: 40px; width: 85%;
+            background: #fff; padding: 20px; border: 1px solid #ccc; box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            transform: rotate(-2deg); margin-bottom: 30px; width: 85%;
         }
-        .wanted-poster h2 { font-size: 1.8rem; color: #000; margin-bottom: 5px; font-family: 'IM Fell English', serif; }
-        .wanted-poster h1 { font-size: 2.8rem; color: var(--ministry-red); margin: 15px 0; border-top: 3px double #000; border-bottom: 3px double #000; padding: 10px 0;}
+        .wanted-poster h2 { font-size: 1.8rem; color: #000; margin-bottom: 5px; }
+        .wanted-poster h1 { font-size: 2.2rem; color: var(--ministry-red); margin: 10px 0; border-top: 2px solid #000; border-bottom: 2px solid #000;}
 
         /* --- LIVE DUEL UI --- */
-        #duel-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: space-between; align-items: center; padding: 50px 10px; box-sizing: border-box; z-index: 15; }
-        #duel-title { color: #ff3333; text-shadow: 0 0 15px #000; font-size: 2.2rem; background: rgba(0,0,0,0.7); padding: 10px 25px; border-radius: 8px; border: 2px solid #ff3333; text-align: center; }
+        #duel-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; flex-direction: column; justify-content: space-between; align-items: center;
+            padding: 50px 10px; box-sizing: border-box; z-index: 15; pointer-events: none;
+        }
+        
+        #duel-title {
+            font-family: 'Cinzel Decorative', serif; color: #ff3333; text-shadow: 0 0 15px #000; font-size: 2rem; 
+            background: rgba(0,0,0,0.7); padding: 10px 20px; border-radius: 8px; border: 1px solid #ff3333;
+        }
         
         #wizard-aura {
             position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
-            width: 130px; height: 130px; border-radius: 50%; opacity: 0;
+            width: 140px; height: 140px; border-radius: 50%; opacity: 0;
             box-shadow: 0 0 120px currentColor, inset 0 0 60px currentColor;
             background: radial-gradient(circle, currentColor 20%, transparent 70%);
             transition: opacity 0.3s, color 0.2s; pointer-events: none;
             animation: pulseAura 0.5s infinite alternate; filter: blur(8px);
         }
-        @keyframes pulseAura { 0% { transform: translate(-50%, -50%) scale(1); } 100% { transform: translate(-50%, -50%) scale(1.3); } }
+        @keyframes pulseAura { 0% { transform: translate(-50%, -50%) scale(1); } 100% { transform: translate(-50%, -50%) scale(1.2); } }
         
-        .duel-controls { display: flex; justify-content: space-around; width: 100%; margin-bottom: 30px; pointer-events: auto;}
+        .duel-controls { display: flex; justify-content: space-around; width: 100%; margin-bottom: 20px; pointer-events: auto;}
         .spell-btn {
-            border: 3px solid #fff; border-radius: 50%; width: 80px; height: 80px; font-size: 2.5rem; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.8), inset 0 0 15px rgba(255,255,255,0.5); cursor: pointer; transition: transform 0.1s;
+            border: 2px solid var(--parchment-light); border-radius: 50%; width: 75px; height: 75px;
+            font-size: 2.5rem; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.8), inset 0 0 15px rgba(255,255,255,0.4); 
+            cursor: pointer; transition: transform 0.1s;
         }
-        .spell-btn:active { transform: scale(0.9) translateY(4px); }
-        .btn-red { background: radial-gradient(circle, #ff3333, #8b0000); }
-        .btn-green { background: radial-gradient(circle, #33ff33, #006400); transform: translateY(-25px); }
-        .btn-blue { background: radial-gradient(circle, #33ccff, #00008b); }
+        .spell-btn:active { transform: scale(0.9); }
+        .btn-red { background: radial-gradient(circle, #ff4d4d, #990000); }
+        .btn-green { background: radial-gradient(circle, #4dff4d, #006600); transform: translateY(-25px); }
+        .btn-blue { background: radial-gradient(circle, #4da6ff, #000099); }
 
         #particle-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
         #duel-flash { position: absolute; top:0; left:0; width:100%; height:100%; background: #fff; opacity: 0; pointer-events: none; transition: opacity 0.1s; z-index: 110;}
 
         /* --- MARAUDER'S MAP --- */
         #map-screen { display: none; background: #d4c3a3; overflow: hidden; z-index: 120; }
-        /* Subtle ink grid/texture to ensure it never looks "blank" */
-        #map-texture { position: absolute; top:0; left:0; width:100%; height:100%; background-image: radial-gradient(rgba(92, 0, 17, 0.1) 2px, transparent 2px); background-size: 30px 30px; pointer-events: none;}
+        
+        /* Procedural Blueprint Rooms */
+        #map-texture { 
+            position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none;
+            background-image: 
+                linear-gradient(rgba(92, 0, 17, 0.2) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(92, 0, 17, 0.2) 2px, transparent 2px),
+                linear-gradient(rgba(92, 0, 17, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(92, 0, 17, 0.1) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+        }
+        
         #map-content { position: absolute; top: 50%; left: 50%; width: 200vw; height: 200vh; transform-origin: center center; transition: transform 0.1s linear; display: flex; justify-content: center; align-items: center; }
-        .footprints { position: absolute; color: #5c0011; opacity: 0.8; transition: all 1.5s ease-in-out; text-align: center; font-family: 'IM Fell English', serif; font-size: 1.2rem; text-shadow: 0 0 2px rgba(92,0,17,0.3);}
+        .footprints { position: absolute; color: #5c0011; opacity: 0.85; transition: transform 2.5s linear; text-align: center; font-family: inherit; font-size: 1.1rem; text-shadow: 0 0 2px rgba(92,0,17,0.3);}
 
         /* --- AZKABAN PROOF --- */
         #proof-screen { display: none; }
-        #proof-image { width: 100%; max-height: 65%; object-fit: contain; box-shadow: 0 10px 30px rgba(0,0,0,0.9); margin-bottom: 25px; background: #fff; border: 2px solid var(--ink-black); }
+        #proof-image { width: 100%; max-height: 65%; object-fit: contain; box-shadow: 0 10px 30px rgba(0,0,0,0.9); margin-bottom: 20px; background: #fff; border: 4px solid var(--ink-black); }
 
         #gallery-screen { display: none; justify-content: flex-start; padding-top: 30px; }
-        #gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; overflow-y: auto; max-height: 65vh; margin-bottom: 20px; padding: 5px; }
-        .gallery-item { width: 100%; border: 3px solid var(--ink-black); box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
+        #gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; overflow-y: auto; max-height: 65vh; margin-bottom: 15px; padding: 5px; }
+        .gallery-item { width: 100%; border: 2px solid var(--ink-black); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
 
     </style>
 </head>
@@ -181,7 +219,7 @@
     <h1>Ministry Registry</h1>
     <h3>Department of Magical Law Enforcement</h3>
     <input type="text" id="agent-input" placeholder="Wand Bearer Name" autocomplete="off">
-    <h3 style="margin-bottom: 10px; border:none;">Select Wand Core:</h3>
+    <h3 style="margin-bottom: 10px; border:none; font-size: 1.1rem;">Select Wand Core:</h3>
     <select id="wand-core">
         <option value="dragon">Dragon Heartstring (Powerful Blasts)</option>
         <option value="phoenix">Phoenix Feather (Second Chance in Duel)</option>
@@ -192,7 +230,7 @@
 
 <div id="briefing-screen" class="modal-screen parchment-bg">
     <div id="briefing-text"></div>
-    <button id="accept-btn" class="cast-btn" style="display:none;">Begin Patrol</button>
+    <button id="accept-btn" class="cast-btn" style="display:none; margin-top:10px;">Begin Patrol</button>
 </div>
 
 <div id="wanted-screen" class="modal-screen parchment-bg">
@@ -207,15 +245,14 @@
 <!-- Marauder's Map Layer -->
 <div id="map-screen" class="modal-screen parchment-bg">
     <div id="map-texture"></div>
-    <h2 style="position:absolute; top:30px; color:var(--ministry-red); z-index:10; font-size: 2.5rem; text-shadow: 0 0 5px #fff;">Marauder's Map</h2>
+    <h2 style="position:absolute; top:25px; color:var(--ministry-red); z-index:10; font-size: 2.2rem; text-shadow: 0 0 5px #fff;">Marauder's Map</h2>
     <div id="map-content"></div>
-    <button id="close-map-btn" class="ministry-btn-small" style="position:absolute; bottom:40px; font-size:1.4rem; padding:15px 30px;">Mischief Managed</button>
+    <button id="close-map-btn" class="cast-btn" style="position:absolute; bottom:30px; font-size:1.3rem; padding:12px 25px;">Mischief Managed</button>
 </div>
 
 <div id="video-container">
     <div class="vignette"></div>
     <div id="ambient-mist"></div>
-    <div id="revelio-mist"></div>
     <div id="cracked-glass"></div>
     <video id="camera" autoplay playsinline></video>
     
@@ -230,6 +267,9 @@
                 <button id="gallery-btn" class="ministry-btn-small">THE LEDGER</button>
             </div>
         </div>
+        
+        <div id="map-btn">📜</div>
+        
         <div style="display: flex; flex-direction: column; align-items: center; pointer-events: auto;">
             <div id="status-text">Trace Charm Active</div>
             <button id="scan-btn" class="cast-btn">Cast Revelio</button>
@@ -240,11 +280,11 @@
         <div id="duel-title">Defend Yourself!</div>
         <div id="wizard-aura"></div>
         <div style="width: 100%; text-align: center; pointer-events:auto;">
-            <p style="color: var(--parchment-light); font-size: 1.3rem; text-shadow: 0 0 8px #000; margin-bottom: 15px; font-family:'Cinzel Decorative', serif;">Match the Aura to Counter-Curse!</p>
+            <p style="color: #fff; font-size: 1.1rem; text-shadow: 0 0 5px #000; margin-bottom: 10px;">Say: EXPELLIARMUS (Red) | IMPEDIMENTA (Green) | STUPEFY (Blue)<br>Or Swipe: UP (Red) | DOWN (Green) | RIGHT (Blue)</p>
             <div class="duel-controls">
-                <div class="spell-btn btn-red" onclick="castCounterSpell('#ff3333')"></div>
-                <div class="spell-btn btn-green" onclick="castCounterSpell('#33ff33')"></div>
-                <div class="spell-btn btn-blue" onclick="castCounterSpell('#33ccff')"></div>
+                <div class="spell-btn btn-red" onclick="castCounterSpell('#ff4d4d')"></div>
+                <div class="spell-btn btn-green" onclick="castCounterSpell('#4dff4d')"></div>
+                <div class="spell-btn btn-blue" onclick="castCounterSpell('#4da6ff')"></div>
             </div>
         </div>
     </div>
@@ -254,17 +294,17 @@
 <div id="duel-flash"></div>
 
 <div id="proof-screen" class="modal-screen parchment-bg">
-    <h1 style="color:var(--ministry-red); font-size: 2.2rem; margin-bottom:15px;">Wizard Apprehended</h1>
+    <h1 style="color:var(--ministry-red); font-size: 2rem; margin-bottom:15px;">Wizard Apprehended</h1>
     <img id="proof-image" src="" alt="Azkaban Mugshot">
     <button id="dismiss-btn" class="cast-btn">Dispatch to Azkaban</button>
 </div>
 
 <div id="gallery-screen" class="modal-screen parchment-bg">
-    <h1 style="color:var(--ministry-red); font-size: 2.5rem; margin-bottom: 15px;">Holding Cells</h1>
+    <h1 style="color:var(--ministry-red); font-size: 2.2rem; margin-bottom: 15px;">Holding Cells</h1>
     <div id="gallery-grid"></div>
-    <div style="display: flex; gap: 10px; margin-top: 10px;">
-        <button id="close-gallery-btn" class="ministry-btn-small" style="padding: 15px 25px; font-size: 1.2rem;">Resume Patrol</button>
-        <button id="logout-btn" class="ministry-btn-small" style="background: var(--ink-black); color: var(--parchment-light);">Relinquish Wand</button>
+    <div style="display: flex; gap: 15px; margin-top: 15px;">
+        <button id="close-gallery-btn" class="ministry-btn-small" style="padding: 12px 20px; font-size: 1.1rem;">Resume Patrol</button>
+        <button id="logout-btn" class="ministry-btn-small" style="background: var(--ink-black); color: var(--parchment-light); padding: 12px 20px; font-size: 1.1rem;">Relinquish Wand</button>
     </div>
 </div>
 
@@ -288,24 +328,19 @@
         "Illegal levitation of livestock", "Confounding local postmen", "Brewing Felix Felicis without permit",
         "Smuggling Peruvian Instant Darkness Powder", "Releasing Pixies in a public library"
     ];
-    const data_levels = [
-        "Mischief Maker", "Apprentice Hexer", "Grand Sorcerer", "Master of Shadows", 
-        "Forbidden Caster", "Chaos Bringer", "Wand-Breaker", "Arch-Mage of Azkaban",
-        "Dark Arts Novice", "Spell Weaver", "Curse Breaker", "Rogue Alchemist"
-    ];
 
     // --- STATE VARIABLES ---
     let audioCtx, currentAgent = "", wandCore = "", intelDatabase = [], capturesCount = 0;
     let forceWizard = false, parentTarget = "", isBoss = false, secondChanceUsed = false, lumosActive = false;
     let successfulCounters = 0, requiredCounters = 3, currentWizardColor = '';
-    const spellColors = ['#ff3333', '#33ff33', '#33ccff'];
+    const spellColors = ['#ff4d4d', '#4dff4d', '#4da6ff'];
 
     // DOM Elements
     const video = document.getElementById('camera'), statusText = document.getElementById('status-text');
     const scanBtn = document.getElementById('scan-btn'), duelLayer = document.getElementById('duel-layer'), wizardAura = document.getElementById('wizard-aura');
     const particleCanvas = document.getElementById('particle-canvas'), ctxParticles = particleCanvas.getContext('2d');
     const mapScreen = document.getElementById('map-screen'), mapContent = document.getElementById('map-content');
-    const ambientMist = document.getElementById('ambient-mist'), revelioMist = document.getElementById('revelio-mist');
+    const ambientMist = document.getElementById('ambient-mist');
     
     // Resize Canvas
     window.addEventListener('resize', () => { particleCanvas.width = window.innerWidth; particleCanvas.height = window.innerHeight; });
@@ -324,33 +359,47 @@
         else if (type === 'capture') { osc.type = 'triangle'; osc.frequency.setValueAtTime(440, audioCtx.currentTime); osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2); osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.4); gain.gain.setValueAtTime(0.6, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5); osc.start(); osc.stop(audioCtx.currentTime + 1.5); }
     }
 
-    // --- SPEECH RECOGNITION (Voice Lumos, Map, & Spells) ---
+    // --- SPEECH RECOGNITION ---
     let recognition;
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    function initSpeech() {
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SpeechRec();
-        recognition.continuous = true;
-        recognition.interimResults = false;
-        recognition.onresult = (event) => {
-            const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
-            console.log("Heard: " + transcript);
+        if (SpeechRec) {
+            recognition = new SpeechRec();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
             
-            // LUMOS / NOX
-            if (transcript.includes("lumos")) toggleLumos(true);
-            if (transcript.includes("nox")) toggleLumos(false);
+            recognition.onresult = (event) => {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    transcript += event.results[i][0].transcript.toLowerCase();
+                }
+                
+                if (transcript.includes("lumos")) toggleLumos(true);
+                if (transcript.includes("nox")) toggleLumos(false);
+                if (transcript.includes("solemnly swear")) openMap();
 
-            // MAP
-            if (transcript.includes("solemnly swear") || transcript.includes("up to no good")) openMap();
-            
-            // DUEL SPELLS
-            if (duelLayer.style.display === 'flex') {
-                if (transcript.includes("expelliarmus") || transcript.includes("red")) castCounterSpell('#ff3333');
-                else if (transcript.includes("stupefy") || transcript.includes("blue")) castCounterSpell('#33ccff');
-                else if (transcript.includes("impedimenta") || transcript.includes("green")) castCounterSpell('#33ff33');
-            }
-        };
-        recognition.onend = () => { if(document.getElementById('video-container').style.display === 'block') recognition.start(); }; 
+                if (duelLayer.style.display === 'flex') {
+                    if (transcript.includes("expelliarmus") || transcript.includes("red")) castCounterSpell('#ff4d4d');
+                    if (transcript.includes("stupefy") || transcript.includes("blue")) castCounterSpell('#4da6ff');
+                    if (transcript.includes("impedimenta") || transcript.includes("green")) castCounterSpell('#4dff4d');
+                }
+            };
+            recognition.onend = () => { 
+                if(document.getElementById('video-container').style.display === 'block') {
+                    try { recognition.start(); } catch(e){} 
+                }
+            };
+            try { recognition.start(); } catch(e){}
+        }
     }
+
+    // Wake up mic on tap just in case iOS suspends it
+    document.body.addEventListener('touchstart', () => {
+        if(recognition && document.getElementById('video-container').style.display === 'block') {
+            try { recognition.start(); } catch(e){}
+        }
+    }, {passive:true});
 
     // --- LUMOS LOGIC ---
     async function toggleLumos(turnOn) {
@@ -359,10 +408,10 @@
             const track = video.srcObject.getVideoTracks()[0];
             await track.applyConstraints({ advanced: [{ torch: lumosActive }] });
         } catch (e) {
-            // CSS Fallback
+            // CSS Fallback - Brightens the mist significantly
             ambientMist.style.background = lumosActive 
-                ? 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6) 0%, transparent 80%)' 
-                : 'radial-gradient(circle at 50% 50%, rgba(200,200,255,0.08) 0%, transparent 50%)';
+                ? 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.7) 0%, transparent 80%)' 
+                : 'radial-gradient(circle at 50% 50%, rgba(200,220,255,0.25) 0%, transparent 50%)';
         }
         statusText.innerText = lumosActive ? "Lumos Maxima" : "Trace Charm Active";
     }
@@ -389,9 +438,9 @@
     duelLayer.addEventListener('touchend', e => {
         let dX = e.changedTouches[0].screenX - touchStartX, dY = e.changedTouches[0].screenY - touchStartY;
         if (Math.abs(dX) > 50 || Math.abs(dY) > 50) {
-            if (Math.abs(dY) > Math.abs(dX) && dY < 0) castCounterSpell('#ff3333'); // Swipe UP = Red
-            else if (Math.abs(dX) > Math.abs(dY) && dX > 0) castCounterSpell('#33ccff'); // Swipe RIGHT = Blue
-            else if (Math.abs(dY) > Math.abs(dX) && dY > 0) castCounterSpell('#33ff33'); // Swipe DOWN = Green
+            if (Math.abs(dY) > Math.abs(dX) && dY < 0) castCounterSpell('#ff4d4d'); // UP = Red
+            else if (Math.abs(dX) > Math.abs(dY) && dX > 0) castCounterSpell('#4da6ff'); // RIGHT = Blue
+            else if (Math.abs(dY) > Math.abs(dX) && dY > 0) castCounterSpell('#4dff4d'); // DOWN = Green
         }
     });
 
@@ -400,8 +449,7 @@
         if (count < 3) return "Apprentice Auror";
         if (count < 8) return "Junior Auror";
         if (count < 15) return "Senior Auror";
-        if (count < 25) return "Master Duelist";
-        return "Head of the Auror Office";
+        return "Master Duelist";
     }
 
     function setWantedTarget() {
@@ -417,7 +465,7 @@
         intelDatabase = JSON.parse(localStorage.getItem(`wizardIntel_${currentAgent}`)) || [];
         capturesCount = intelDatabase.length;
         
-        document.getElementById('agent-name-display').innerText = `Auror: ${currentAgent}`;
+        document.getElementById('agent-name-display').innerText = `${currentAgent}`;
         document.getElementById('agent-rank-display').innerText = `Rank: ${getRank(capturesCount)} | Captures: ${capturesCount}`;
         
         const savedWanted = localStorage.getItem(`wantedTarget_${currentAgent}`);
@@ -443,36 +491,68 @@
 
     document.getElementById('accept-btn').addEventListener('click', () => {
         requestOrientation();
-        if(recognition) { try { recognition.start(); } catch(e){} }
+        // Request Camera and Audio together for Speech API
+        navigator.mediaDevices.getUserMedia({video: {facingMode: 'environment'}, audio: true})
+            .then(s => { 
+                video.srcObject = s; 
+                initSpeech(); // Start listening once permission granted
+            })
+            .catch(e => { 
+                console.log("No mic/cam", e); 
+                statusText.innerText = "Magical Interference Detected"; 
+                // Fallback to video only if audio denied
+                navigator.mediaDevices.getUserMedia({video: {facingMode: 'environment'}}).then(s => video.srcObject = s);
+            });
+
         document.getElementById('briefing-screen').style.display = 'none';
         document.getElementById('video-container').style.display = 'block';
-        navigator.mediaDevices.getUserMedia({video: {facingMode: 'environment'}}).then(s => video.srcObject = s).catch(e => { statusText.innerText = "Magical Interference Detected"; });
     });
 
     // --- MARAUDER's MAP LOGIC ---
-    // If voice fails, double tap the wanted button to open map
-    document.getElementById('wanted-btn').addEventListener('dblclick', openMap);
+    document.getElementById('map-btn').addEventListener('click', () => {
+        alert("Mr. Moony presents his compliments and begs you to keep your abnormally large nose out of other people's business. (Try speaking the passcode, or Long-Press this button!)");
+    });
     
+    let mapTimer;
+    document.getElementById('map-btn').addEventListener('touchstart', () => { mapTimer = setTimeout(openMap, 1500); }, {passive:true});
+    document.getElementById('map-btn').addEventListener('touchend', () => { clearTimeout(mapTimer); });
+
+    let mapInterval;
     function openMap() {
         document.getElementById('map-screen').style.display = 'flex';
-        mapContent.innerHTML = '<div style="position:absolute; width:15px; height:15px; background:#5c0011; border-radius:50%; box-shadow: 0 0 10px #5c0011;"></div>'; // You are here
+        mapContent.innerHTML = '<div style="position:absolute; width:15px; height:15px; background:#5c0011; border-radius:50%; box-shadow: 0 0 10px #5c0011; z-index:100;"></div>'; 
         
-        let numPrints = wandCore === 'unicorn' ? 6 : 3;
+        let numPrints = wandCore === 'unicorn' ? 15 : 10;
+        let mapPrints = [];
         for(let i=0; i<numPrints; i++) {
             let p = document.createElement('div');
             p.className = 'footprints';
             p.innerText = "👣 " + data_names[Math.floor(Math.random()*data_names.length)];
-            p.style.top = (Math.random() * 150 + 25) + "vh";
-            p.style.left = (Math.random() * 150 + 25) + "vw";
-            mapContent.appendChild(p);
             
-            setInterval(() => {
-                p.style.top = (parseFloat(p.style.top) + (Math.random()*10 - 5)) + "vh";
-                p.style.left = (parseFloat(p.style.left) + (Math.random()*10 - 5)) + "vw";
-            }, 2500);
+            let startX = (Math.random() * 150 + 25);
+            let startY = (Math.random() * 150 + 25);
+            p.style.transform = `translate(${startX}vw, ${startY}vh)`;
+            
+            p.dataset.x = startX;
+            p.dataset.y = startY;
+            
+            mapContent.appendChild(p);
+            mapPrints.push(p);
         }
+        
+        mapInterval = setInterval(() => {
+            mapPrints.forEach(p => {
+                let nX = parseFloat(p.dataset.x) + (Math.random()*16 - 8);
+                let nY = parseFloat(p.dataset.y) + (Math.random()*16 - 8);
+                p.dataset.x = nX; p.dataset.y = nY;
+                p.style.transform = `translate(${nX}vw, ${nY}vh)`;
+            });
+        }, 2500);
     }
-    document.getElementById('close-map-btn').addEventListener('click', () => { document.getElementById('map-screen').style.display = 'none'; });
+    document.getElementById('close-map-btn').addEventListener('click', () => { 
+        document.getElementById('map-screen').style.display = 'none'; 
+        clearInterval(mapInterval);
+    });
 
     // --- LIVE DUEL MECHANICS ---
     let particlesList = [];
@@ -494,12 +574,11 @@
         initAudio(); scanBtn.disabled = true; statusText.innerText = "Casting Revelio..."; 
         statusText.classList.remove('muggle-active');
         
-        // Reveal Mist Animation
-        revelioMist.classList.add('mist-active');
+        // Mist Lifting Animation
+        ambientMist.classList.add('mist-lifting');
         playSound('whoosh');
 
         setTimeout(() => {
-            revelioMist.classList.remove('mist-active');
             const isWizard = forceWizard || (Math.random() < 0.20); forceWizard = false; 
 
             if (isWizard) {
@@ -508,6 +587,7 @@
                 statusText.innerText = "No Trace - Standard Muggle"; 
                 statusText.classList.add('muggle-active');
                 setTimeout(() => { 
+                    ambientMist.classList.remove('mist-lifting'); // Bring mist back
                     statusText.innerText = lumosActive ? "Lumos Maxima" : "Trace Charm Active"; 
                     statusText.classList.remove('muggle-active');
                     scanBtn.disabled = false; 
@@ -589,23 +669,26 @@
     function winDuel() {
         try {
             generateAzkabanMugshot();
+            
+            playSound('capture');
+            duelLayer.style.display = 'none';
+            document.getElementById('ui-layer').style.display = 'flex';
+            wizardAura.style.opacity = '0';
+            
+            document.getElementById('proof-screen').style.display = 'flex';
+            ambientMist.classList.remove('mist-lifting'); // Reset mist safely
+            
+            successfulCounters = 3; 
+            isBoss = false; 
         } catch (e) {
-            console.error("Camera fail, using fallback", e);
-            // In case videoWidth is 0 (camera paused), we fallback safely so it doesn't hang
-            document.getElementById('proof-image').src = ""; 
+            console.error("Duel Win Error:", e);
+            // Absolute fail-safe
+            duelLayer.style.display = 'none';
+            document.getElementById('ui-layer').style.display = 'flex';
+            scanBtn.disabled = false;
+            statusText.innerText = "Trace Charm Active";
+            ambientMist.classList.remove('mist-lifting');
         }
-        
-        playSound('capture');
-        duelLayer.style.display = 'none';
-        document.getElementById('ui-layer').style.display = 'flex';
-        wizardAura.style.opacity = '0';
-        
-        document.getElementById('proof-screen').style.display = 'flex';
-        
-        // Update counters before they dismiss
-        successfulCounters = 3; 
-        document.getElementById('duel-title').innerText = `Blocked! (3/3)`;
-        isBoss = false; 
     }
 
     function loseDuel() {
@@ -621,6 +704,7 @@
             duelLayer.style.display = 'none';
             document.getElementById('ui-layer').style.display = 'flex';
             statusText.innerText = "Target Lost";
+            ambientMist.classList.remove('mist-lifting'); // Bring mist back
             setTimeout(() => { statusText.innerText = lumosActive ? "Lumos Maxima" : "Trace Charm Active"; scanBtn.disabled = false; }, 2000);
         }, 1500);
     }
@@ -646,7 +730,7 @@
         // Base Feed & Newspaper Filter
         ctx.filter = 'sepia(100%) contrast(140%) grayscale(20%) brightness(85%)';
         if(video.videoWidth > 0) ctx.drawImage(video, 0, 0, w, h);
-        else { ctx.fillStyle="#443322"; ctx.fillRect(0,0,w,h); } // Fallback if cam fails
+        else { ctx.fillStyle="#443322"; ctx.fillRect(0,0,w,h); } 
         ctx.filter = 'none'; 
         
         // Iron Bars
@@ -659,8 +743,21 @@
         ctx.fillStyle = "#e8dcc4"; ctx.fillRect(w*0.05, h*0.65, w*0.9, h*0.3); 
         ctx.strokeStyle = "#5c0011"; ctx.lineWidth = 3; ctx.strokeRect(w*0.05+5, h*0.65+5, w*0.9-10, h*0.3-10);
         
-        ctx.fillStyle = "#1a1110"; ctx.font = `bold ${Math.floor(h*0.04)}px serif`; 
-        
+        ctx.fillStyle = "#1a1110"; ctx.textBaseline = "top";
+        const maxTextWidth = w - (w * 0.15);
+        const lineHeight = Math.floor(h * 0.04); 
+        let currentY = h*0.65 + 20;
+
+        const printLine = (label, value) => {
+            ctx.font = `bold ${Math.floor(h*0.03)}px 'IM Fell English', serif`; 
+            ctx.fillText(`${label}:`, w*0.1, currentY); 
+            const labelWidth = ctx.measureText(`${label}: `).width;
+            
+            ctx.font = `${Math.floor(h*0.035)}px 'IM Fell English', serif`; 
+            currentY = wrapText(ctx, value, w*0.1 + labelWidth, currentY, maxTextWidth - labelWidth, lineHeight);
+            currentY += (lineHeight * 0.2); 
+        };
+
         let targetName = parentTarget ? parentTarget : data_names[Math.floor(Math.random() * data_names.length)];
         let isWanted = (targetName === localStorage.getItem(`wantedTarget_${currentAgent}`));
         parentTarget = ""; 
@@ -672,8 +769,8 @@
             setWantedTarget();
         }
 
-        ctx.fillText(`ALIAS: ${targetName}`, w*0.1, h*0.72); 
-        ctx.fillText(`CRIME: ${data_crimes[Math.floor(Math.random() * data_crimes.length)]}`, w*0.1, h*0.8); 
+        printLine("Alias", targetName);
+        printLine("Crime", data_crimes[Math.floor(Math.random() * data_crimes.length)]);
 
         document.getElementById('proof-image').dataset.tempImageData = c.toDataURL('image/jpeg', 0.8);
         document.getElementById('proof-image').src = document.getElementById('proof-image').dataset.tempImageData;
@@ -701,13 +798,7 @@
         document.getElementById('gallery-screen').style.display = 'flex';
     });
     document.getElementById('close-gallery-btn').addEventListener('click', () => document.getElementById('gallery-screen').style.display = 'none');
-    document.getElementById('logout-btn').addEventListener('click', () => {
-        document.getElementById('gallery-screen').style.display = 'none';
-        document.getElementById('video-container').style.display = 'none';
-        document.getElementById('agent-input').value = "";
-        document.getElementById('profile-screen').style.display = 'flex';
-    });
-
+    
     // Secret Minister Menu
     let menuTaps = 0;
     statusText.addEventListener('click', () => {
